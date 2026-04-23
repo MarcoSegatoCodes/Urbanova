@@ -1,0 +1,34 @@
+{
+  "summary": {
+    "totalVehicles": 24,
+    "activeVehicles": 18,
+    "totalStations": 12,
+    "operationalStations": 11,
+    "totalTripsToday": 47,
+    "totalTripsThisMonth": 1284,
+    "co2SavedToday": 38.5,
+    "co2SavedThisMonth": 1050.2,
+    "co2SavedAllTime": 12450.8
+  },
+  "tripsByDayOfWeek": [
+    { "day": "Mon", "trips": 180 },
+    { "day": "Tue", "trips": 195 },
+    { "day": "Wed", "trips": 210 },
+    { "day": "Thu", "trips": 188 },
+    { "day": "Fri", "trips": 220 },
+    { "day": "Sat", "trips": 165 },
+    { "day": "Sun", "trips": 126 }
+  ],
+  "tripsByVehicleType": [
+    { "type": "BIKE", "value": 580 },
+    { "type": "SCOOTER", "value": 420 },
+    { "type": "CAR", "value": 180 },
+    { "type": "BUS", "value": 104 }
+  ],
+  "co2SavedByMonth": [
+    { "month": "Jan", "co2": 890.5 },
+    { "month": "Feb", "co2": 920.3 },
+    { "month": "Mar", "co2": 1015.8 },
+    { "month": "Apr", "co2": 780.2 }
+  ]
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "TR-001",
+    "vehicleId": "VH-001",
+    "userId": "USR-EXT-101",
+    "startStationId": "ST-001",
+    "endStationId": "ST-003",
+    "startTime": "2026-04-22T08:15:00Z",
+    "endTime": "2026-04-22T08:45:00Z",
+    "distanceKm": 5.2,
+    "co2SavedKg": 0.85
+  },
+  {
+    "id": "TR-002",
+    "vehicleId": "VH-005",
+    "userId": "USR-EXT-102",
+    "startStationId": "ST-002",
+    "endStationId": "ST-001",
+    "startTime": "2026-04-22T09:00:00Z",
+    "endTime": "2026-04-22T09:20:00Z",
+    "distanceKm": 3.1,
+    "co2SavedKg": 0.51
+  }
+]
