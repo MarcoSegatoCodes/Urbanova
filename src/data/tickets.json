@@ -1,0 +1,19 @@
+[
+  {
+    "id": "TK-001",
+    "title": "Flat tire on E-Bike-042",
+    "description": "Rear tire punctured, bike found at Central Station with visible damage.",
+    "vehicleId": "VH-001",
+    "stationId": "ST-001",
+    "issueType": "FLAT_TIRE",
+    "priority": "MEDIUM",
+    "status": "IN_PROGRESS",
+    "reportedBy": "USR-002",
+    "assignedTo": "USR-003",
+    "createdAt": "2026-04-18T10:30:00Z",
+    "updatedAt": "2026-04-19T15:45:00Z",
+    "resolvedAt": null,
+    "attachments": [],
+    "resolutionNotes": ""
+  }
+]

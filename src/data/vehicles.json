@@ -1,0 +1,32 @@
+[
+  {
+    "id": "VH-001",
+    "name": "E-Bike-042",
+    "type": "BIKE",
+    "status": "AVAILABLE",
+    "batteryLevel": 85,
+    "currentStationId": "ST-003",
+    "lastMaintenanceDate": "2026-03-15",
+    "nextMaintenanceDue": "2026-06-15",
+    "totalTrips": 347,
+    "totalKmTraveled": 1523.5,
+    "dateAdded": "2024-06-01",
+    "coordinates": { "lat": 45.4642, "lng": 9.1900 },
+    "notes": ""
+  },
+  {
+    "id": "VH-002",
+    "name": "Tesla-Model-3-01",
+    "type": "ELECTRIC_CAR",
+    "status": "MAINTENANCE",
+    "batteryLevel": 12,
+    "currentStationId": "ST-001",
+    "lastMaintenanceDate": "2026-01-10",
+    "nextMaintenanceDue": "2026-04-20",
+    "totalTrips": 89,
+    "totalKmTraveled": 4200.2,
+    "dateAdded": "2025-02-15",
+    "coordinates": { "lat": 45.4700, "lng": 9.1850 },
+    "notes": "Battery cell degradation reported."
+  }
+]

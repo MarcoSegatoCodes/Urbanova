@@ -1,0 +1,38 @@
+[
+  {
+    "id": "USR-001",
+    "email": "admin@urbanova.com",
+    "password": "admin",
+    "firstName": "Marco",
+    "lastName": "Segato",
+    "role": "ADMIN",
+    "isActive": true
+  },
+  {
+    "id": "USR-002",
+    "email": "tech@urbanova.com",
+    "password": "tech",
+    "firstName": "Elena",
+    "lastName": "Bianchi",
+    "role": "TECHNICIAN",
+    "isActive": true
+  },
+    {
+    "id": "USR-003",
+    "email": "user@urbanova.com",
+    "password": "user",
+    "firstName": "Samuele",
+    "lastName": "Drigo",
+    "role": "USER",
+    "isActive": true
+  },
+    {
+    "id": "USR-004",
+    "email": "support@urbanova.com",
+    "password": "support",
+    "firstName": "Marco",
+    "lastName": "Prevarin",
+    "role": "SUPPORT",
+    "isActive": true
+  }
+]

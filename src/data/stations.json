@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ST-001",
+    "name": "Central Station Hub",
+    "address": "Via Roma 1, Milano",
+    "coordinates": { "lat": 45.4642, "lng": 9.1900 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 20,
+    "availableDocks": 8,
+    "availableBikes": 10,
+    "availableEVehicles": 2,
+    "chargingPorts": 4,
+    "lastInspection": "2026-04-01"
+  },
+  {
+    "id": "ST-003",
+    "name": "University Campus",
+    "address": "Piazza Leonardo da Vinci, Milano",
+    "coordinates": { "lat": 45.4781, "lng": 9.2275 },
+    "type": "BIKE_ONLY",
+    "status": "OPERATIONAL",
+    "totalDocks": 30,
+    "availableDocks": 5,
+    "availableBikes": 25,
+    "availableEVehicles": 0,
+    "chargingPorts": 0,
+    "lastInspection": "2026-03-28"
+  }
+]
