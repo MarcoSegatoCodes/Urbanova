@@ -1,19 +1,30 @@
-export type VehicleType = "bus" | "train" | "tram" | "ferry" | "subway";
+export type VehicleType = "BIKE" | "SCOOTER" | "CAR" | "BUS" | string;
 
 export type VehicleStatus =
-  | "available"
-  | "in-transit"
-  | "maintenance"
-  | "out-of-service";
+  | "AVAILABLE"
+  | "IN_USE"
+  | "MAINTENANCE"
+  | "CHARGING"
+  | "OUT_OF_SERVICE"
+  | string;
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
 
 export interface Vehicle {
   id: string;
+  name: string;
   type: VehicleType;
-  model?: string;
-  capacity: number;
-  currentStationId?: string;
   status: VehicleStatus;
-  lastMaintenanceDate?: string;
-  mileage?: number;
-  assignedRouteId?: string;
+  batteryLevel: number;
+  currentStationId: string;
+  lastMaintenanceDate: string;
+  nextMaintenanceDue: string;
+  totalTrips: number;
+  totalKmTraveled: number;
+  dateAdded: string;
+  coordinates: Coordinates;
+  notes: string;
 }

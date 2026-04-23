@@ -1,62 +1,33 @@
-export type TimePeriod = "day" | "week" | "month" | "quarter" | "year";
+export interface AnalyticsSummary {
+  totalVehicles: number;
+  activeVehicles: number;
+  totalStations: number;
+  operationalStations: number;
+  totalTripsToday: number;
+  totalTripsThisMonth: number;
+  co2SavedToday: number;
+  co2SavedThisMonth: number;
+  co2SavedAllTime: number;
+}
 
-export type MetricType =
-  | "ridership"
-  | "revenue"
-  | "on-time-performance"
-  | "occupancy"
-  | "incidents";
+export interface TripsByDay {
+  day: string;
+  trips: number;
+}
 
-export interface MetricDataPoint {
-  timestamp: string;
+export interface TripsByVehicleType {
+  type: string;
   value: number;
-  label?: string;
 }
 
-export interface DashboardMetric {
-  id: string;
-  name: string;
-  type: MetricType;
-  currentValue: number;
-  previousValue: number;
-  changePercent: number;
-  trend: "up" | "down" | "stable";
-  period: TimePeriod;
-  data: MetricDataPoint[];
+export interface CO2ByMonth {
+  month: string;
+  co2: number;
 }
 
-export interface RidershipStats {
-  totalRiders: number;
-  averageDaily: number;
-  peakHour: string;
-  peakDayOfWeek: string;
-  byVehicleType: Record<string, number>;
-  byStation: Record<string, number>;
-}
-
-export interface RevenueStats {
-  totalRevenue: number;
-  currency: string;
-  byTicketType: Record<string, number>;
-  byPaymentMethod: Record<string, number>;
-  averageTicketPrice: number;
-}
-
-export interface PerformanceStats {
-  onTimePercentage: number;
-  averageDelay: number;
-  cancelledTrips: number;
-  completedTrips: number;
-  incidentCount: number;
-}
-
-export interface AnalyticsReport {
-  id: string;
-  generatedAt: string;
-  period: TimePeriod;
-  startDate: string;
-  endDate: string;
-  ridership: RidershipStats;
-  revenue: RevenueStats;
-  performance: PerformanceStats;
+export interface Analytics {
+  summary: AnalyticsSummary;
+  tripsByDayOfWeek: TripsByDay[];
+  tripsByVehicleType: TripsByVehicleType[];
+  co2SavedByMonth: CO2ByMonth[];
 }
