@@ -1,73 +1,26 @@
-# React + TypeScript + Vite
+# Urbanova - Green Mobility Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Urbanova è una piattaforma Full-Stack avanzata per la gestione della mobilità sostenibile in ambito Smart City. Il sistema permette il monitoraggio in tempo reale di flotte di bike-sharing, veicoli elettrici comunali e l'analisi dei flussi di traffico con un focus particolare sull'impatto ambientale.
 
-Currently, two official plugins are available:
+## Caratteristiche
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Live Fleet Tracking:** Monitoraggio geolocalizzato su mappa interattiva di stazioni e veicoli.
+- **Gestione Manutenzioni:** Workflow multi-step per la segnalazione guasti e prenotazione interventi tecnici.
+- **Green Analytics:** Dashboard interattiva con calcolo in tempo reale del risparmio di CO2 e trend di utilizzo.
+- **Smart Filtering:** Sistema di filtraggio avanzato per stato del veicolo, tipologia e livelli di batteria.
 
-## React Compiler
+## Tech
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- **Framework:** React 19 + TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS + Shadcn UI
+- **State Management:** TanStack Query (React Query)
+- **Routing:** React Router DOM
+- **Charts:** Recharts / Tremor
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Backend
+- **Runtime:** Node.js + TypeScript
+- **Database:** PostgreSQL (con estensione PostGIS per dati geografici)
+- **ORM:** Prisma
+- **Auth:** NextAuth.js / Clerk
