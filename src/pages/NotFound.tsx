@@ -13,7 +13,7 @@ export default function NotFound() {
         Page Not Found
       </Typography>
       <Typography variant="body1" sx={{ mb: 3 }}>
-        The page you're looking for doesn't exist.
+        The page you&apos;re looking for doesn&apos;t exist.
       </Typography>
       <Button variant="contained" onClick={() => navigate("/")}>
         Go Home

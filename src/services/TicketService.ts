@@ -4,7 +4,7 @@ import type {
   TicketStatus,
   // FareClass,
   PaymentMethod,
-} from "../types";
+} from "../types/legacy-ticket.types";
 
 const STORAGE_KEY = "tickets";
 

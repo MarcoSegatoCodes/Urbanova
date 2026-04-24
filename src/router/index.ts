@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
+import React from "react";
+
 import { routes, notFoundRoute } from "./routes";
 import Layout from "../components/Layout";
-import React from "react";
 
 // Find the index route
 const indexRoute = routes.find((r) => r.isIndex);

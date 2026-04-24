@@ -16,6 +16,7 @@ const Stations = lazy(() => import("../pages/Stations"));
 const Trips = lazy(() => import("../pages/Trips"));
 const Vehicles = lazy(() => import("../pages/Vehicles"));
 const Users = lazy(() => import("../pages/Users"));
+const Tickets = lazy(() => import("../pages/Tickets"));
 const Analytics = lazy(() => import("../pages/Analytics"));
 const Settings = lazy(() => import("../pages/Settings"));
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -54,6 +55,11 @@ export const routes: RouteConfig[] = [
     path: "/users",
     component: Users,
     name: "Users",
+  },
+  {
+    path: "/tickets",
+    component: Tickets,
+    name: "Tickets",
   },
   {
     path: "/analytics",

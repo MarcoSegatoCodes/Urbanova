@@ -19,7 +19,7 @@ export default defineConfig([
       react.configs.flat.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
-      jsxA11y.configs.flat.recommended,
+      jsxA11y.flatConfigs.recommended,
     ],
 
     languageOptions: {
