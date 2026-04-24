@@ -46,7 +46,7 @@ export default function Analytics() {
         
         {/* Pie Chart - Vehicle type distribution */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="Vehicle Fleet Distribution">
+          <ChartCard title="Vehicle Fleet Distribution" exportData={data.tripsByVehicleType}>
             <PieChart
               series={[{
                 data: data.tripsByVehicleType.map((v, i) => ({
@@ -64,7 +64,7 @@ export default function Analytics() {
 
         {/* Pie Chart - Trip by vehicle type */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="Trips by Vehicle Type">
+          <ChartCard title="Trips by Vehicle Type" exportData={data.tripsByVehicleType}>
             <PieChart
               series={[{
                 data: data.tripsByVehicleType.map((v, i) => ({
@@ -80,7 +80,7 @@ export default function Analytics() {
 
         {/* Bars Chart - Usage by station */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="Usage by Station">
+          <ChartCard title="Usage by Station" exportData={data.usageByStation}>
             <BarChart
               dataset={data.usageByStation}
               xAxis={[{ scaleType: 'band', dataKey: 'station' }]}
@@ -91,7 +91,7 @@ export default function Analytics() {
 
         {/* Bars Chart - Trips per day of week */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="Trips per Day of Week">
+          <ChartCard title="Trips per Day of Week" exportData={data.tripsByDayOfWeek}>
             <BarChart
               dataset={data.tripsByDayOfWeek}
               xAxis={[{ scaleType: 'band', dataKey: 'day' }]}
@@ -102,7 +102,7 @@ export default function Analytics() {
 
         {/* Line Chart - CO2 saving over time */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="CO2 Saved Over Time (kg)">
+          <ChartCard title="CO2 Saved Over Time (kg)" exportData={data.co2SavedByMonth}>
             <LineChart
               dataset={data.co2SavedByMonth}
               xAxis={[{ scaleType: 'point', dataKey: 'month' }]}
@@ -113,7 +113,7 @@ export default function Analytics() {
 
         {/* Line Chart - Average battery consumption */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <ChartCard title="Average Battery Consumption (%)">
+          <ChartCard title="Average Battery Consumption (%)" exportData={data.batteryConsumptionOverTime}>
             <LineChart
               dataset={data.batteryConsumptionOverTime}
               xAxis={[{ scaleType: 'point', dataKey: 'time' }]}
@@ -121,7 +121,6 @@ export default function Analytics() {
             />
           </ChartCard>
         </Grid>
-
       </Grid>
     </Box>
   );
