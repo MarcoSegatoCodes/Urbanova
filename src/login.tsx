@@ -72,7 +72,7 @@ function LoginForm() {
       setIsLoading(false);
       setTimeout(() => navigate("/home"), 600);
     } else {
-      setError("Credenziali non valide");
+      setError("Credenziali non valide. Usa le credenziali demo mostrate sotto.");
       setIsLoading(false);
     }
   };
@@ -163,7 +163,7 @@ function LoginForm() {
                   maxWidth: 480,
                 }}
               >
-                La cabina di regia per la tua mobilità urbana.
+                La cabina di regia per la tua mobilit urbana.
               </Typography>
               <Typography
                 variant="body1"
@@ -195,8 +195,8 @@ function LoginForm() {
                 <Typography variant="overline" sx={{ color: "#a9d8ea" }}>
                   Accesso demo
                 </Typography>
-                <Typography variant="body2">Email: {demoUser?.email}</Typography>
-                <Typography variant="body2">Password: {demoUser?.password}</Typography>
+                <Typography variant="body2" sx={{ color: "#ffff" }}>Email: {demoUser?.email}</Typography>
+                <Typography variant="body2" sx={{ color: "#ffff" }}>Password: {demoUser?.password}</Typography>
               </Paper>
               <Paper
                 elevation={0}
@@ -210,7 +210,9 @@ function LoginForm() {
                 <Typography variant="overline" sx={{ color: "#a9d8ea" }}>
                   Stato
                 </Typography>
-                <Typography variant="body2">Monitoraggio, gestione e navigazione protetta.</Typography>
+                <Typography variant="body2" sx={{ color: "#ffff" }}>
+                  Monitoraggio, gestione e navigazione protetta.
+                </Typography>
               </Paper>
             </Stack>
           </Paper>
