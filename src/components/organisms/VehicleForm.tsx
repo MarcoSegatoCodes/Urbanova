@@ -32,6 +32,21 @@ const vehicleStatuses: VehicleStatus[] = [
   "OUT_OF_SERVICE",
 ];
 
+const statusLabels: Record<VehicleStatus, string> = {
+  AVAILABLE: "Available",
+  IN_USE: "In Use",
+  MAINTENANCE: "Maintenance",
+  CHARGING: "Charging",
+  OUT_OF_SERVICE: "Out of Service",
+};
+
+const typeLabels: Record<VehicleType, string> = {
+  BIKE: "Bike",
+  SCOOTER: "Scooter",
+  CAR: "Car",
+  BUS: "Bus",
+};
+
 interface FormErrors {
   [key: string]: string;
 }
@@ -128,7 +143,7 @@ export default function VehicleForm({
                 >
                   {vehicleTypes.map((type) => (
                     <MenuItem key={type} value={type}>
-                      {type}
+                      {typeLabels[type]}
                     </MenuItem>
                   ))}
                 </Select>
@@ -151,7 +166,7 @@ export default function VehicleForm({
                 >
                   {vehicleStatuses.map((status) => (
                     <MenuItem key={status} value={status}>
-                      {status}
+                      {statusLabels[status]}
                     </MenuItem>
                   ))}
                 </Select>

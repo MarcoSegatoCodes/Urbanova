@@ -20,6 +20,7 @@ interface Props {
   onSelect: (id: string) => void;
   onEdit: (vehicle: Vehicle) => void;
   onDelete: (id: string) => void;
+  onView?: (vehicle: Vehicle) => void;
 }
 
 export default function VehicleTableRow({
@@ -28,6 +29,7 @@ export default function VehicleTableRow({
   onSelect,
   onEdit,
   onDelete,
+  onView,
 }: Props) {
   const isMaintenanceDue = new Date(vehicle.nextMaintenanceDue) <= new Date();
 
@@ -61,6 +63,16 @@ export default function VehicleTableRow({
       <TableCell>{vehicle.totalKmTraveled.toFixed(1)} km</TableCell>
       <TableCell align="right">
         <Stack direction="row" spacing={1}>
+          {onView && (
+            <Button
+              size="small"
+              onClick={() => onView(vehicle)}
+              variant="text"
+              color="primary"
+            >
+              View
+            </Button>
+          )}
           <Button
             size="small"
             startIcon={<EditIcon />}

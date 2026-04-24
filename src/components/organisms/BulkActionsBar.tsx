@@ -29,6 +29,14 @@ const vehicleStatuses: VehicleStatus[] = [
   "OUT_OF_SERVICE",
 ];
 
+const statusLabels: Record<VehicleStatus, string> = {
+  AVAILABLE: "Available",
+  IN_USE: "In Use",
+  MAINTENANCE: "Maintenance",
+  CHARGING: "Charging",
+  OUT_OF_SERVICE: "Out of Service",
+};
+
 export default function BulkActionsBar({
   selectedCount,
   onChangeStatus,
@@ -75,7 +83,7 @@ export default function BulkActionsBar({
             </MenuItem>
             {vehicleStatuses.map((status) => (
               <MenuItem key={status} value={status}>
-                {status}
+                {statusLabels[status]}
               </MenuItem>
             ))}
           </Select>

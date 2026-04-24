@@ -14,6 +14,7 @@ const iconMap: Record<string, React.ReactNode> = {
   BIKE: <DirectionsBikeIcon sx={{ fontSize: 18 }} />,
   SCOOTER: <TwoWheelerIcon sx={{ fontSize: 18 }} />,
   CAR: <DirectionsCarIcon sx={{ fontSize: 18 }} />,
+  ELECTRIC_CAR: <DirectionsCarIcon sx={{ fontSize: 18 }} />,
   BUS: <DirectionsBusIcon sx={{ fontSize: 18 }} />,
 };
 
@@ -21,6 +22,7 @@ const typeConfig: Record<string, { color: any; label: string }> = {
   BIKE: { color: "info", label: "Bike" },
   SCOOTER: { color: "success", label: "Scooter" },
   CAR: { color: "warning", label: "Car" },
+  ELECTRIC_CAR: { color: "success", label: "E-Car" },
   BUS: { color: "error", label: "Bus" },
 };
 

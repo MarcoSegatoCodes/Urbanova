@@ -24,6 +24,7 @@ interface Props {
   onSort: (field: string) => void;
   onEdit: (vehicle: Vehicle) => void;
   onDelete: (id: string) => void;
+  onView?: (vehicle: Vehicle) => void;
 }
 
 const columnConfig = [
@@ -49,6 +50,7 @@ export default function VehicleTable({
   onSort,
   onEdit,
   onDelete,
+  onView,
 }: Props) {
   const checkboxRef = useRef<HTMLButtonElement | null>(null);
 
@@ -116,6 +118,7 @@ export default function VehicleTable({
                 onSelect={onSelect}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                onView={onView}
               />
             ))
           )}

@@ -1,4 +1,4 @@
-// components/Vehicle/Vehicle.tsx
+// pages/Vehicles.tsx
 import { useState, useEffect } from "react";
 import { Container, Box, Typography, Button, Grid, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,13 +17,14 @@ import VehicleFilterPanel, {
   type FilterState,
 } from "../components/molecules/VehicleFilterPanel";
 import ConfirmDeleteModal from "../components/molecules/ConfirmDeleteModal";
+import VehicleDetailModal from "../components/molecules/VehicleDetailModal";
 import VehicleTable from "../components/organisms/VehicleTable";
 import VehicleForm from "../components/organisms/VehicleForm";
 import BulkActionsBar from "../components/organisms/BulkActionsBar";
 
 type ViewMode = "list" | "add" | "edit";
 
-export default function VehicleModule() {
+export default function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -36,6 +37,9 @@ export default function VehicleModule() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [vehicleToDelete, setVehicleToDelete] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedVehicleForView, setSelectedVehicleForView] =
+    useState<Vehicle | null>(null);
 
   // Load vehicles on mount
   useEffect(() => {
@@ -237,6 +241,11 @@ export default function VehicleModule() {
       setSortBy(field);
       setSortOrder("asc");
     }
+  };
+
+  const handleViewVehicle = (vehicle: Vehicle) => {
+    setSelectedVehicleForView(vehicle);
+    setDetailModalOpen(true);
   };
 
   // Render based on view mode

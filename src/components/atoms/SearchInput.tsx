@@ -12,7 +12,7 @@ interface Props {
 export default function SearchInput({
   value,
   onChange,
-  placeholder = "Search by ID or name...",
+  placeholder = "Search vehicles by ID, name, or type...",
 }: Props) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
@@ -30,9 +30,18 @@ export default function SearchInput({
         input: {
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon />
+              <SearchIcon color="action" />
             </InputAdornment>
           ),
+        },
+      }}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "8px",
+          backgroundColor: "#f5f5f5",
+          "&:hover": {
+            backgroundColor: "#fff",
+          },
         },
       }}
     />
