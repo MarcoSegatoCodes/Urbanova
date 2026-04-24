@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   CssBaseline,
+  IconButton,
 } from "@mui/material";
 import {
   Home,
@@ -20,8 +21,18 @@ import {
   Analytics,
   Settings,
   DirectionsCar,
+  Logout,
 } from "@mui/icons-material";
 import { routes } from "../router/routes";
+
+// Check if user is authenticated
+const isAuthenticated = () => localStorage.getItem("auth") === "true";
+
+// Logout function
+const handleLogout = () => {
+  localStorage.removeItem("auth");
+  window.location.href = "/";
+};
 
 const drawerWidth = 240;
 
@@ -86,6 +97,13 @@ export default function Layout() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {pageTitle}
           </Typography>
+          <IconButton
+            color="inherit"
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <Logout />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box
