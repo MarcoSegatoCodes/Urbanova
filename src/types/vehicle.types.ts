@@ -1,4 +1,12 @@
-export type VehicleType = "BIKE" | "SCOOTER" | "CAR" | "BUS" | string;
+import type { Coordinates } from "./common.types";
+
+export type VehicleType =
+  | "BIKE"
+  | "SCOOTER"
+  | "CAR"
+  | "BUS"
+  | "ELECTRIC_CAR"
+  | string;
 
 export type VehicleStatus =
   | "AVAILABLE"
@@ -7,11 +15,6 @@ export type VehicleStatus =
   | "CHARGING"
   | "OUT_OF_SERVICE"
   | string;
-
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
 
 export interface Vehicle {
   id: string;
@@ -27,4 +30,5 @@ export interface Vehicle {
   dateAdded: string;
   coordinates: Coordinates;
   notes: string;
+  model?: string;
 }

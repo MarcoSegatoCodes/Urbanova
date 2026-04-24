@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import type { ComponentType } from "react";
 
 // Lazy load pages for better performance
 const Login = lazy(() => import("../login"));
@@ -13,9 +14,9 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 
 export interface RouteConfig {
   path: string;
-  component: React.ComponentType;
+  component: ComponentType;
   name: string;
-  icon?: React.ComponentType;
+  icon?: ComponentType;
   isIndex?: boolean;
 }
 

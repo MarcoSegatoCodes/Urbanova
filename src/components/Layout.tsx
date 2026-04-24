@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -25,9 +26,6 @@ import {
 } from "@mui/icons-material";
 import { routes } from "../router/routes";
 
-// Check if user is authenticated
-const isAuthenticated = () => localStorage.getItem("auth") === "true";
-
 // Logout function
 const handleLogout = () => {
   localStorage.removeItem("auth");
@@ -36,7 +34,7 @@ const handleLogout = () => {
 
 const drawerWidth = 240;
 
-const iconMap: Record<string, React.ComponentType> = {
+const iconMap: Record<string, ComponentType> = {
   Home: Home,
   Stations: Map,
   Trips: DirectionsBus,
@@ -61,7 +59,7 @@ export default function Layout() {
         </Typography>
       </Toolbar>
       <List>
-        {routes.map((route) => {
+        {routes.filter((route) => route.path !== "/").map((route) => {
           const Icon = iconMap[route.name];
           return (
             <ListItem key={route.path} disablePadding>

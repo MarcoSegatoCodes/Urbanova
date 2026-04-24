@@ -15,6 +15,24 @@ export type TicketStatus =
   | "RESOLVED"
   | "CLOSED"
   | "CANCELLED"
+  | "VALID"
+  | "USED"
+  | "EXPIRED"
+  | "REFUNDED"
+  | string;
+
+export type TicketType =
+  | "SINGLE_RIDE"
+  | "DAY_PASS"
+  | "WEEK_PASS"
+  | "MONTH_PASS"
+  | string;
+
+export type PaymentMethod =
+  | "CARD"
+  | "CASH"
+  | "WALLET"
+  | "TRANSFER"
   | string;
 
 export interface Ticket {
@@ -33,4 +51,15 @@ export interface Ticket {
   resolvedAt: string | null;
   attachments: string[];
   resolutionNotes: string;
+  userId?: string;
+  type?: TicketType;
+  tripId?: string;
+  originStationId?: string;
+  destinationStationId?: string;
+  usedAt?: string;
+  price?: number;
+  paymentMethod?: PaymentMethod;
+  qrCode?: string;
+  validFrom?: string;
+  validUntil?: string;
 }

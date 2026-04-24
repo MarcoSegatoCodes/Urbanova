@@ -29,7 +29,7 @@ export const getVehiclesByStation = (stationId: string): Vehicle[] => {
 };
 
 export const getAvailableVehicles = (): Vehicle[] => {
-  return vehicles.filter((v) => v.status === "available");
+  return vehicles.filter((v) => v.status === "AVAILABLE");
 };
 
 // --- WRITE Operations ---
@@ -86,6 +86,7 @@ export const searchVehicles = (query: string): Vehicle[] => {
   return vehicles.filter(
     (v) =>
       v.id.toLowerCase().includes(lowerQuery) ||
+      v.name.toLowerCase().includes(lowerQuery) ||
       v.type.toLowerCase().includes(lowerQuery) ||
       v.model?.toLowerCase().includes(lowerQuery),
   );
