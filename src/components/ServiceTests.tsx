@@ -1,5 +1,5 @@
 // TestServices.tsx — drop this anywhere to test
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // Import your JSON data
 import vehiclesData from "../data/vehicles.json";
@@ -16,14 +16,11 @@ import {
 } from "../services";
 
 export default function ServiceTests() {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    // Initialize with JSON data
+  const [loaded] = useState(() => {
     initVehicles(vehiclesData);
     initStations(stationsData);
-    setLoaded(true);
-  }, []);
+    return true;
+  });
 
   if (!loaded) return <p>Loading...</p>;
 

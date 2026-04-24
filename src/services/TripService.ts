@@ -1,181 +1,98 @@
-import type {
-  Trip,
-  Route,
-  TripStatus,
-  //TripStop,
-  TripDelay,
-} from "../types";
-
-const TRIP_STORAGE_KEY = "trips";
-const ROUTE_STORAGE_KEY = "routes";
+import type { Trip } from "../types";
 
 let trips: Trip[] = [];
-let routes: Route[] = [];
 
 // --- INIT ---
 export const initTrips = (data: Trip[]): void => {
-  trips = [...data];
+  trips = data.map((trip) => ({ ...trip }));
 };
 
-export const initRoutes = (data: Route[]): void => {
-  routes = [...data];
-};
+// --- READ Operations ---
+export const getTrips = (): Trip[] => trips.map((trip) => ({ ...trip }));
 
-// --- TRIP READ Operations ---
-export const getAllTrips = (): Trip[] => [...trips];
+export const getTripById = (id: string): Trip | undefined =>
+  trips.find((trip) => trip.id === id);
 
-export const getTripById = (id: string): Trip | undefined => {
-  return trips.find((t) => t.id === id);
-};
+export const getTripsByVehicleId = (vehicleId: string): Trip[] =>
+  trips.filter((trip) => trip.vehicleId === vehicleId);
 
-export const getTripsByStatus = (status: TripStatus): Trip[] => {
-  return trips.filter((t) => t.status === status);
-};
+export const getTripsByUserId = (userId: string): Trip[] =>
+  trips.filter((trip) => trip.userId === userId);
 
-export const getTripsByVehicle = (vehicleId: string): Trip[] => {
-  return trips.filter((t) => t.vehicleId === vehicleId);
-};
-
-export const getTripsByDriver = (driverId: string): Trip[] => {
-  return trips.filter((t) => t.driverId === driverId);
-};
-
-export const getTripsByRoute = (routeId: string): Trip[] => {
-  return trips.filter((t) => t.routeId === routeId);
-};
-
-export const getUpcomingTrips = (): Trip[] => {
-  const now = new Date().toISOString();
-  return trips.filter(
-    (t) => t.scheduledDeparture > now && t.status === "scheduled",
+export const getTripsByStationId = (stationId: string): Trip[] =>
+  trips.filter(
+    (trip) =>
+      trip.startStationId === stationId || trip.endStationId === stationId,
   );
-};
 
-export const getActiveTrips = (): Trip[] => {
-  return trips.filter((t) => t.status === "in-progress");
-};
+export const getTripsInRange = (fromISO: string, toISO: string): Trip[] => {
+  const from = new Date(fromISO).getTime();
+  const to = new Date(toISO).getTime();
 
-export const getDelayedTrips = (): Trip[] => {
-  return trips.filter((t) => t.status === "delayed");
-};
-
-// --- TRIP WRITE Operations ---
-export const addTrip = (trip: Trip): Trip => {
-  trips = [...trips, trip];
-  return trip;
-};
-
-export const updateTrip = (
-  id: string,
-  updates: Partial<Trip>,
-): Trip | undefined => {
-  const index = trips.findIndex((t) => t.id === id);
-  if (index === -1) return undefined;
-  trips[index] = { ...trips[index], ...updates };
-  return trips[index];
-};
-
-export const updateTripStatus = (
-  id: string,
-  status: TripStatus,
-): Trip | undefined => {
-  return updateTrip(id, { status });
-};
-
-export const startTrip = (id: string): Trip | undefined => {
-  return updateTrip(id, {
-    status: "in-progress",
-    actualDeparture: new Date().toISOString(),
+  return trips.filter((trip) => {
+    const start = new Date(trip.startTime).getTime();
+    return start >= from && start <= to;
   });
 };
 
-export const completeTrip = (id: string): Trip | undefined => {
-  return updateTrip(id, {
-    status: "completed",
-    actualArrival: new Date().toISOString(),
-  });
+export const getActiveTrips = (): Trip[] =>
+  trips.filter((trip) => !trip.endTime || trip.endTime.trim() === "");
+
+// --- WRITE Operations ---
+export const addTrip = (trip: Trip): Trip[] => {
+  trips = [...trips, { ...trip }];
+  return getTrips();
 };
 
-export const cancelTrip = (id: string): Trip | undefined => {
-  return updateTrip(id, { status: "cancelled" });
+export const updateTrip = (id: string, updates: Partial<Trip>): Trip[] => {
+  trips = trips.map((trip) =>
+    trip.id === id ? { ...trip, ...updates, id: trip.id } : trip,
+  );
+  return getTrips();
 };
 
-export const setTripDelay = (
-  id: string,
-  delay: TripDelay,
-): Trip | undefined => {
-  return updateTrip(id, { status: "delayed", delay });
+export const removeTrip = (id: string): Trip[] => {
+  trips = trips.filter((trip) => trip.id !== id);
+  return getTrips();
 };
 
-export const updatePassengerCount = (
-  id: string,
-  count: number,
-): Trip | undefined => {
-  return updateTrip(id, { passengerCount: count });
-};
-
-export const deleteTrip = (id: string): boolean => {
-  const initialLength = trips.length;
-  trips = trips.filter((t) => t.id !== id);
-  return trips.length < initialLength;
-};
-
-// --- ROUTE READ Operations ---
-export const getAllRoutes = (): Route[] => [...routes];
-
-export const getRouteById = (id: string): Route | undefined => {
-  return routes.find((r) => r.id === id);
-};
-
-export const getActiveRoutes = (): Route[] => {
-  return routes.filter((r) => r.isActive);
-};
-
-export const getRoutesByVehicleType = (vehicleType: string): Route[] => {
-  return routes.filter((r) => r.vehicleType === vehicleType);
-};
-
-// --- ROUTE WRITE Operations ---
-export const addRoute = (route: Route): Route => {
-  routes = [...routes, route];
-  return route;
-};
-
-export const updateRoute = (
-  id: string,
-  updates: Partial<Route>,
-): Route | undefined => {
-  const index = routes.findIndex((r) => r.id === id);
-  if (index === -1) return undefined;
-  routes[index] = { ...routes[index], ...updates };
-  return routes[index];
-};
-
-export const toggleRouteActive = (id: string): Route | undefined => {
-  const route = getRouteById(id);
-  if (!route) return undefined;
-  return updateRoute(id, { isActive: !route.isActive });
-};
-
-export const deleteRoute = (id: string): boolean => {
-  const initialLength = routes.length;
-  routes = routes.filter((r) => r.id !== id);
-  return routes.length < initialLength;
-};
-
-// --- UTILITY Operations ---
+// --- METRICS ---
 export const getTripCount = (): number => trips.length;
-export const getRouteCount = (): number => routes.length;
 
-export const searchTrips = (query: string): Trip[] => {
-  const lowerQuery = query.toLowerCase();
-  return trips.filter(
-    (t) =>
-      t.id.toLowerCase().includes(lowerQuery) ||
-      t.routeId.toLowerCase().includes(lowerQuery) ||
-      t.vehicleId.toLowerCase().includes(lowerQuery),
-  );
+export const getTripCountToday = (): number => {
+  const now = new Date();
+  const startOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  ).getTime();
+  return trips.filter((trip) => new Date(trip.startTime).getTime() >= startOfDay)
+    .length;
 };
 
-// --- STORAGE KEY Exports ---
-export { TRIP_STORAGE_KEY, ROUTE_STORAGE_KEY };
+export const getTripCountThisMonth = (): number => {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+
+  return trips.filter((trip) => {
+    const start = new Date(trip.startTime);
+    return start.getFullYear() === year && start.getMonth() === month;
+  }).length;
+};
+
+export const getTotalDistanceKm = (): number =>
+  trips.reduce((sum, trip) => sum + (Number(trip.distanceKm) || 0), 0);
+
+export const getTotalCO2SavedKg = (): number =>
+  trips.reduce((sum, trip) => sum + (Number(trip.co2SavedKg) || 0), 0);
+
+export const getAverageTripDistanceKm = (): number => {
+  if (!trips.length) return 0;
+  return getTotalDistanceKm() / trips.length;
+};
+
+// --- Utility ---
+export const clearTrips = (): void => {
+  trips = [];
+};

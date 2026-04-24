@@ -8,7 +8,6 @@ import {
   Typography,
   Grid,
   Stack,
-  Chip,
   Divider,
   Paper,
 } from "@mui/material";
@@ -110,7 +109,7 @@ export default function VehicleDetailModal({
               Location & Station
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -126,7 +125,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -142,7 +141,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -172,7 +171,7 @@ export default function VehicleDetailModal({
               Maintenance
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -188,7 +187,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{
@@ -233,7 +232,7 @@ export default function VehicleDetailModal({
               Usage Statistics
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -249,7 +248,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}

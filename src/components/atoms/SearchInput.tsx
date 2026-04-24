@@ -1,6 +1,7 @@
 // components/Vehicle/atoms/SearchInput.tsx
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, IconButton, Tooltip } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import { type ChangeEvent } from "react";
 
 interface Props {
@@ -22,6 +23,7 @@ export default function SearchInput({
     <TextField
       fullWidth
       type="text"
+      label="Search Vehicles"
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
@@ -33,12 +35,26 @@ export default function SearchInput({
               <SearchIcon color="action" />
             </InputAdornment>
           ),
+          endAdornment: value ? (
+            <InputAdornment position="end">
+              <Tooltip title="Clear search">
+                <IconButton
+                  aria-label="clear search"
+                  edge="end"
+                  size="small"
+                  onClick={() => onChange("")}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </InputAdornment>
+          ) : undefined,
         },
       }}
       sx={{
         "& .MuiOutlinedInput-root": {
-          borderRadius: "8px",
-          backgroundColor: "#f5f5f5",
+          borderRadius: "10px",
+          backgroundColor: "#fafafa",
           "&:hover": {
             backgroundColor: "#fff",
           },

@@ -12,6 +12,8 @@ export const initUsers = (data: User[]): void => {
 // --- READ Operations ---
 export const getAllUsers = (): User[] => [...users];
 
+export const getUsers = (): User[] => getAllUsers();
+
 export const getUserById = (id: string): User | undefined => {
   return users.find((u) => u.id === id);
 };

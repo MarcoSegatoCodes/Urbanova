@@ -8,7 +8,7 @@
  * - name: Display name (useful for navigation)
  * - icon: Optional icon component for menu/navigation
  */
-import { lazy } from "react";
+import { lazy, type ComponentType } from "react";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("../pages/Home"));
@@ -22,9 +22,9 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 
 export interface RouteConfig {
   path: string;
-  component: React.ComponentType;
+  component: ComponentType;
   name: string;
-  icon?: React.ComponentType;
+  icon?: ComponentType;
   isIndex?: boolean;
 }
 

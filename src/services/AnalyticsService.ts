@@ -1,157 +1,188 @@
-import type {
-  AnalyticsReport,
-  DashboardMetric,
-  RidershipStats,
-  RevenueStats,
-  PerformanceStats,
-  TimePeriod,
-  MetricType,
-  MetricDataPoint,
-} from "../types";
+import type { Analytics, AnalyticsSummary } from "../types";
+import {
+  getVehicles,
+  getActiveVehicles,
+  getVehicleTypeDistribution,
+} from "./VehicleService";
+import { getStations, getOperationalStations } from "./StationService";
+import {
+  getTrips,
+  getTripCountToday,
+  getTripCountThisMonth,
+  getTotalCO2SavedKg,
+} from "./TripService";
 
-const STORAGE_KEY = "analytics";
-
-let reports: AnalyticsReport[] = [];
-let metrics: DashboardMetric[] = [];
+let analytics: Analytics = {
+  summary: {
+    totalVehicles: 0,
+    activeVehicles: 0,
+    totalStations: 0,
+    operationalStations: 0,
+    totalTripsToday: 0,
+    totalTripsThisMonth: 0,
+    co2SavedToday: 0,
+    co2SavedThisMonth: 0,
+    co2SavedAllTime: 0,
+  },
+  tripsByDayOfWeek: [],
+  tripsByVehicleType: [],
+  co2SavedByMonth: [],
+};
 
 // --- INIT ---
-export const initReports = (data: AnalyticsReport[]): void => {
-  reports = [...data];
+export const initAnalytics = (data: Analytics): void => {
+  analytics = {
+    ...data,
+    summary: { ...data.summary },
+    tripsByDayOfWeek: [...data.tripsByDayOfWeek],
+    tripsByVehicleType: [...data.tripsByVehicleType],
+    co2SavedByMonth: [...data.co2SavedByMonth],
+  };
 };
 
-export const initMetrics = (data: DashboardMetric[]): void => {
-  metrics = [...data];
+// --- READ Operations ---
+export const getAnalytics = (): Analytics => ({
+  ...analytics,
+  summary: { ...analytics.summary },
+  tripsByDayOfWeek: [...analytics.tripsByDayOfWeek],
+  tripsByVehicleType: [...analytics.tripsByVehicleType],
+  co2SavedByMonth: [...analytics.co2SavedByMonth],
+});
+
+export const getAnalyticsSummary = (): AnalyticsSummary => ({
+  ...analytics.summary,
+});
+
+export const getTripsByDayOfWeek = () => [...analytics.tripsByDayOfWeek];
+
+export const getTripsByVehicleType = () => [...analytics.tripsByVehicleType];
+
+export const getCO2SavedByMonth = () => [...analytics.co2SavedByMonth];
+
+// --- RECALC ---
+const computeCO2Today = (): number => {
+  const now = new Date();
+  const startOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  ).getTime();
+
+  return getTrips()
+    .filter((trip) => new Date(trip.startTime).getTime() >= startOfDay)
+    .reduce((sum, trip) => sum + (Number(trip.co2SavedKg) || 0), 0);
 };
 
-// --- REPORT READ Operations ---
-export const getAllReports = (): AnalyticsReport[] => [...reports];
+const computeCO2ThisMonth = (): number => {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
 
-export const getReportById = (id: string): AnalyticsReport | undefined => {
-  return reports.find((r) => r.id === id);
+  return getTrips()
+    .filter((trip) => {
+      const start = new Date(trip.startTime);
+      return start.getFullYear() === year && start.getMonth() === month;
+    })
+    .reduce((sum, trip) => sum + (Number(trip.co2SavedKg) || 0), 0);
 };
 
-export const getReportsByPeriod = (period: TimePeriod): AnalyticsReport[] => {
-  return reports.filter((r) => r.period === period);
+const computeTripsByDayOfWeek = () => {
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const counts = [0, 0, 0, 0, 0, 0, 0];
+
+  getTrips().forEach((trip) => {
+    const day = new Date(trip.startTime).getDay();
+    counts[day] += 1;
+  });
+
+  return dayNames.map((day, index) => ({ day, trips: counts[index] }));
 };
 
-export const getLatestReport = (): AnalyticsReport | undefined => {
-  if (reports.length === 0) return undefined;
-  return [...reports].sort((a, b) =>
-    b.generatedAt.localeCompare(a.generatedAt),
-  )[0];
+const computeTripsByVehicleType = () => {
+  const distribution = getVehicleTypeDistribution();
+  return Object.entries(distribution).map(([type, value]) => ({ type, value }));
 };
 
-export const getReportsInDateRange = (
-  startDate: string,
-  endDate: string,
-): AnalyticsReport[] => {
-  return reports.filter(
-    (r) => r.startDate >= startDate && r.endDate <= endDate,
+const computeCO2ByMonth = () => {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const buckets = new Map<string, number>();
+
+  getTrips().forEach((trip) => {
+    const start = new Date(trip.startTime);
+    const key = `${start.getFullYear()}-${start.getMonth()}`;
+    buckets.set(key, (buckets.get(key) ?? 0) + (Number(trip.co2SavedKg) || 0));
+  });
+
+  const sorted = Array.from(buckets.entries()).sort(([a], [b]) =>
+    a.localeCompare(b),
   );
+
+  return sorted.map(([key, co2]) => {
+    const [year, monthIndex] = key.split("-").map(Number);
+    return {
+      month: `${monthNames[monthIndex]} ${year}`,
+      co2,
+    };
+  });
 };
 
-// --- METRIC READ Operations ---
-export const getAllMetrics = (): DashboardMetric[] => [...metrics];
+export const refreshAnalytics = (): Analytics => {
+  const totalVehicles = getVehicles().length;
+  const activeVehicles = getActiveVehicles().length;
+  const totalStations = getStations().length;
+  const operationalStations = getOperationalStations().length;
 
-export const getMetricById = (id: string): DashboardMetric | undefined => {
-  return metrics.find((m) => m.id === id);
+  analytics.summary = {
+    totalVehicles,
+    activeVehicles,
+    totalStations,
+    operationalStations,
+    totalTripsToday: getTripCountToday(),
+    totalTripsThisMonth: getTripCountThisMonth(),
+    co2SavedToday: computeCO2Today(),
+    co2SavedThisMonth: computeCO2ThisMonth(),
+    co2SavedAllTime: getTotalCO2SavedKg(),
+  };
+
+  analytics.tripsByDayOfWeek = computeTripsByDayOfWeek();
+  analytics.tripsByVehicleType = computeTripsByVehicleType();
+  analytics.co2SavedByMonth = computeCO2ByMonth();
+
+  return getAnalytics();
 };
 
-export const getMetricsByType = (type: MetricType): DashboardMetric[] => {
-  return metrics.filter((m) => m.type === type);
+export const getDashboardKpis = () => {
+  const summary = analytics.summary;
+  const vehicleUtilizationPct =
+    summary.totalVehicles > 0
+      ? (summary.activeVehicles / summary.totalVehicles) * 100
+      : 0;
+
+  const stationOperationalPct =
+    summary.totalStations > 0
+      ? (summary.operationalStations / summary.totalStations) * 100
+      : 0;
+
+  return {
+    vehicleUtilizationPct,
+    stationOperationalPct,
+    avgTripsPerVehiclePerMonth:
+      summary.totalVehicles > 0
+        ? summary.totalTripsThisMonth / summary.totalVehicles
+        : 0,
+  };
 };
-
-export const getMetricsByPeriod = (period: TimePeriod): DashboardMetric[] => {
-  return metrics.filter((m) => m.period === period);
-};
-
-export const getTrendingUpMetrics = (): DashboardMetric[] => {
-  return metrics.filter((m) => m.trend === "up");
-};
-
-export const getTrendingDownMetrics = (): DashboardMetric[] => {
-  return metrics.filter((m) => m.trend === "down");
-};
-
-// --- REPORT WRITE Operations ---
-export const addReport = (report: AnalyticsReport): AnalyticsReport => {
-  reports = [...reports, report];
-  return report;
-};
-
-export const updateReport = (
-  id: string,
-  updates: Partial<AnalyticsReport>,
-): AnalyticsReport | undefined => {
-  const index = reports.findIndex((r) => r.id === id);
-  if (index === -1) return undefined;
-  reports[index] = { ...reports[index], ...updates };
-  return reports[index];
-};
-
-export const deleteReport = (id: string): boolean => {
-  const initialLength = reports.length;
-  reports = reports.filter((r) => r.id !== id);
-  return reports.length < initialLength;
-};
-
-// --- METRIC WRITE Operations ---
-export const addMetric = (metric: DashboardMetric): DashboardMetric => {
-  metrics = [...metrics, metric];
-  return metric;
-};
-
-export const updateMetric = (
-  id: string,
-  updates: Partial<DashboardMetric>,
-): DashboardMetric | undefined => {
-  const index = metrics.findIndex((m) => m.id === id);
-  if (index === -1) return undefined;
-  metrics[index] = { ...metrics[index], ...updates };
-  return metrics[index];
-};
-
-export const addDataPointToMetric = (
-  id: string,
-  dataPoint: MetricDataPoint,
-): DashboardMetric | undefined => {
-  const metric = getMetricById(id);
-  if (!metric) return undefined;
-  return updateMetric(id, { data: [...metric.data, dataPoint] });
-};
-
-export const deleteMetric = (id: string): boolean => {
-  const initialLength = metrics.length;
-  metrics = metrics.filter((m) => m.id !== id);
-  return metrics.length < initialLength;
-};
-
-// --- AGGREGATION Helpers ---
-export const calculateAverageMetricValue = (type: MetricType): number => {
-  const typeMetrics = getMetricsByType(type);
-  if (typeMetrics.length === 0) return 0;
-  const sum = typeMetrics.reduce((acc, m) => acc + m.currentValue, 0);
-  return sum / typeMetrics.length;
-};
-
-export const getPerformanceSummary = (): PerformanceStats | undefined => {
-  const latest = getLatestReport();
-  return latest?.performance;
-};
-
-export const getRidershipSummary = (): RidershipStats | undefined => {
-  const latest = getLatestReport();
-  return latest?.ridership;
-};
-
-export const getRevenueSummary = (): RevenueStats | undefined => {
-  const latest = getLatestReport();
-  return latest?.revenue;
-};
-
-// --- UTILITY Operations ---
-export const getReportCount = (): number => reports.length;
-export const getMetricCount = (): number => metrics.length;
-
-// --- STORAGE KEY Export ---
-export const ANALYTICS_STORAGE_KEY = STORAGE_KEY;

@@ -1,4 +1,20 @@
-export type UserRole = "ADMIN" | "OPERATOR" | "TECHNICIAN" | "USER" | string;
+export type UserRole =
+  | "ADMIN"
+  | "OPERATOR"
+  | "TECHNICIAN"
+  | "USER"
+  | "SUPPORT"
+  | string;
+
+export type UserStatus = "ACTIVE" | "INACTIVE";
+
+export type PassType =
+  | "NONE"
+  | "DAILY"
+  | "WEEKLY"
+  | "MONTHLY"
+  | "YEARLY"
+  | string;
 
 export interface User {
   id: string;
@@ -8,4 +24,8 @@ export interface User {
   lastName: string;
   role: UserRole;
   isActive: boolean;
+  passType?: PassType;
+  passExpiryDate?: string;
+  balance?: number;
+  lastLoginAt?: string;
 }

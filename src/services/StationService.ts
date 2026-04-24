@@ -12,6 +12,8 @@ export const initStations = (data: Station[]): void => {
 // --- READ Operations ---
 export const getAllStations = (): Station[] => [...stations];
 
+export const getStations = (): Station[] => getAllStations();
+
 export const getStationById = (id: string): Station | undefined => {
   return stations.find((s) => s.id === id);
 };

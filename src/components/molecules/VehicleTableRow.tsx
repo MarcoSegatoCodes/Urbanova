@@ -33,9 +33,20 @@ export default function VehicleTableRow({
 }: Props) {
   const isMaintenanceDue = new Date(vehicle.nextMaintenanceDue) <= new Date();
 
+  const handleRowClick = () => {
+    if (onView) {
+      onView(vehicle);
+    }
+  };
+
   return (
-    <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
+    <TableRow
+      hover
+      selected={selected}
+      onClick={handleRowClick}
+      sx={{ cursor: onView ? "pointer" : "default" }}
+    >
+      <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
         <Checkbox checked={selected} onChange={() => onSelect(vehicle.id)} />
       </TableCell>
       <TableCell sx={{ fontWeight: "bold" }}>{vehicle.name}</TableCell>
@@ -61,7 +72,7 @@ export default function VehicleTableRow({
       <TableCell>{vehicle.currentStationId}</TableCell>
       <TableCell>{vehicle.totalTrips}</TableCell>
       <TableCell>{vehicle.totalKmTraveled.toFixed(1)} km</TableCell>
-      <TableCell align="right">
+      <TableCell align="right" onClick={(e) => e.stopPropagation()}>
         <Stack direction="row" spacing={1}>
           {onView && (
             <Button

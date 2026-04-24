@@ -12,6 +12,8 @@ export const initVehicles = (data: Vehicle[]): void => {
 // --- READ Operations ---
 export const getAllVehicles = (): Vehicle[] => [...vehicles];
 
+export const getVehicles = (): Vehicle[] => getAllVehicles();
+
 export const getVehicleById = (id: string): Vehicle | undefined => {
   return vehicles.find((v) => v.id === id);
 };
@@ -30,6 +32,20 @@ export const getVehiclesByStation = (stationId: string): Vehicle[] => {
 
 export const getAvailableVehicles = (): Vehicle[] => {
   return vehicles.filter((v) => v.status === "AVAILABLE");
+};
+
+export const getActiveVehicles = (): Vehicle[] => {
+  return vehicles.filter((v) => v.status !== "OUT_OF_SERVICE");
+};
+
+export const getVehicleTypeDistribution = (): Record<string, number> => {
+  return vehicles.reduce(
+    (acc, vehicle) => {
+      acc[vehicle.type] = (acc[vehicle.type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 };
 
 // --- WRITE Operations ---

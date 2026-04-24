@@ -1,5 +1,6 @@
 // components/Vehicle/molecules/VehicleFormField.tsx
-import { FormControl, FormHelperText, FormLabel, Box, ReactNode } from '@mui/material';
+import { FormControl, FormHelperText, FormLabel } from "@mui/material";
+import type { ReactNode } from "react";
 
 interface Props {
   label: string;
@@ -13,7 +14,7 @@ export default function VehicleFormField({ label, error, required = false, child
     <FormControl fullWidth error={!!error}>
       <FormLabel sx={{ mb: 1 }}>
         {label}
-        {required && <span style={{ color: 'red' }}> *</span>}
+        {required && <span style={{ color: "red" }}> *</span>}
       </FormLabel>
       {children}
       {error && <FormHelperText>{error}</FormHelperText>}

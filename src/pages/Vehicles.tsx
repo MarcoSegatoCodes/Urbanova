@@ -1,11 +1,17 @@
 // pages/Vehicles.tsx
-import { useState, useEffect } from "react";
-import { Container, Box, Typography, Button, Grid, Stack } from "@mui/material";
+import { useMemo, useState } from "react";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Stack,
+  Paper,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import type { Vehicle, VehicleStatus } from "../types";
-import vehiclesData from "../data/vehicles.json";
 import {
-  initVehicles,
   getAllVehicles,
   addVehicle,
   updateVehicle,
@@ -23,10 +29,10 @@ import VehicleForm from "../components/organisms/VehicleForm";
 import BulkActionsBar from "../components/organisms/BulkActionsBar";
 
 type ViewMode = "list" | "add" | "edit";
+type VehicleCreatePayload = Omit<Vehicle, "id" | "dateAdded">;
 
 export default function Vehicles() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => getAllVehicles());
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,35 +47,26 @@ export default function Vehicles() {
   const [selectedVehicleForView, setSelectedVehicleForView] =
     useState<Vehicle | null>(null);
 
-  // Load vehicles on mount
-  useEffect(() => {
-    initVehicles(vehiclesData as Vehicle[]);
-    loadVehicles();
-  }, []);
-
-  // Apply filters and search
-  useEffect(() => {
-    applyFiltersAndSearch();
-  }, [vehicles, searchQuery, filters, sortBy, sortOrder]);
-
-  const loadVehicles = () => {
+  function loadVehicles() {
     const loaded = getAllVehicles();
     setVehicles(loaded);
-  };
+  }
 
-  const applyFiltersAndSearch = () => {
+  const filteredVehicles = useMemo(() => {
     let result = [...vehicles];
 
-    // Search
     if (searchQuery) {
+      const normalizedQuery = searchQuery.toLowerCase();
       result = result.filter(
         (v) =>
-          v.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          v.name.toLowerCase().includes(searchQuery.toLowerCase()),
+          v.id.toLowerCase().includes(normalizedQuery) ||
+          v.name.toLowerCase().includes(normalizedQuery) ||
+          v.type.toLowerCase().includes(normalizedQuery) ||
+          v.status.toLowerCase().includes(normalizedQuery) ||
+          v.currentStationId.toLowerCase().includes(normalizedQuery),
       );
     }
 
-    // Filters
     if (filters.status) {
       result = result.filter((v) => v.status === filters.status);
     }
@@ -77,10 +74,12 @@ export default function Vehicles() {
       result = result.filter((v) => v.type === filters.type);
     }
     if (filters.batteryMin !== undefined) {
-      result = result.filter((v) => v.batteryLevel >= filters.batteryMin!);
+      const minBattery = filters.batteryMin;
+      result = result.filter((v) => v.batteryLevel >= minBattery);
     }
     if (filters.batteryMax !== undefined) {
-      result = result.filter((v) => v.batteryLevel <= filters.batteryMax!);
+      const maxBattery = filters.batteryMax;
+      result = result.filter((v) => v.batteryLevel <= maxBattery);
     }
     if (filters.station) {
       result = result.filter((v) => v.currentStationId === filters.station);
@@ -90,27 +89,26 @@ export default function Vehicles() {
       result = result.filter((v) => new Date(v.nextMaintenanceDue) <= now);
     }
 
-    // Sort
     result.sort((a, b) => {
-      let aVal: any = a[sortBy as keyof Vehicle];
-      let bVal: any = b[sortBy as keyof Vehicle];
+      const rawA = a[sortBy as keyof Vehicle];
+      const rawB = b[sortBy as keyof Vehicle];
 
-      if (typeof aVal === "string") {
-        aVal = aVal.toLowerCase();
-        bVal = (bVal as string).toLowerCase();
-      }
+      const aVal =
+        typeof rawA === "number" ? rawA : String(rawA ?? "").toLowerCase();
+      const bVal =
+        typeof rawB === "number" ? rawB : String(rawB ?? "").toLowerCase();
 
       if (sortOrder === "asc") {
         return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-      } else {
-        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
       }
+
+      return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
     });
 
-    setFilteredVehicles(result);
-  };
+    return result;
+  }, [vehicles, searchQuery, filters, sortBy, sortOrder]);
 
-  const handleAddVehicle = (data: any) => {
+  const handleAddVehicle = (data: VehicleCreatePayload) => {
     setIsLoading(true);
     try {
       const newVehicle: Vehicle = {
@@ -122,7 +120,7 @@ export default function Vehicles() {
       loadVehicles();
       setViewMode("list");
       alert("Vehicle added successfully!");
-    } catch (error) {
+    } catch {
       alert("Error adding vehicle");
     } finally {
       setIsLoading(false);
@@ -134,7 +132,7 @@ export default function Vehicles() {
     setViewMode("edit");
   };
 
-  const handleUpdateVehicle = (data: any) => {
+  const handleUpdateVehicle = (data: Vehicle) => {
     setIsLoading(true);
     try {
       updateVehicle(data.id, data);
@@ -142,7 +140,7 @@ export default function Vehicles() {
       setViewMode("list");
       setEditingVehicle(undefined);
       alert("Vehicle updated successfully!");
-    } catch (error) {
+    } catch {
       alert("Error updating vehicle");
     } finally {
       setIsLoading(false);
@@ -163,7 +161,7 @@ export default function Vehicles() {
       setDeleteModalOpen(false);
       setVehicleToDelete(null);
       alert("Vehicle retired successfully");
-    } catch (error) {
+    } catch {
       alert("Error deleting vehicle");
     } finally {
       setIsLoading(false);
@@ -177,7 +175,7 @@ export default function Vehicles() {
       loadVehicles();
       setSelectedIds(new Set());
       alert(`Status updated for ${selectedIds.size} vehicle(s)`);
-    } catch (error) {
+    } catch {
       alert("Error updating status");
     } finally {
       setIsLoading(false);
@@ -192,7 +190,7 @@ export default function Vehicles() {
       loadVehicles();
       setSelectedIds(new Set());
       alert(`Assigned ${selectedIds.size} vehicle(s) to ${stationId}`);
-    } catch (error) {
+    } catch {
       alert("Error assigning station");
     } finally {
       setIsLoading(false);
@@ -208,7 +206,7 @@ export default function Vehicles() {
         loadVehicles();
         setSelectedIds(new Set());
         alert(`${selectedIds.size} vehicle(s) retired`);
-      } catch (error) {
+      } catch {
         alert("Error retiring vehicles");
       } finally {
         setIsLoading(false);
@@ -248,13 +246,22 @@ export default function Vehicles() {
     setDetailModalOpen(true);
   };
 
+  const handleVehicleSubmit = (payload: Vehicle | VehicleCreatePayload) => {
+    if ("id" in payload && "dateAdded" in payload) {
+      handleUpdateVehicle(payload);
+      return;
+    }
+
+    handleAddVehicle(payload);
+  };
+
   // Render based on view mode
   if (viewMode === "add" || viewMode === "edit") {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
         <VehicleForm
           vehicle={editingVehicle}
-          onSubmit={viewMode === "add" ? handleAddVehicle : handleUpdateVehicle}
+          onSubmit={handleVehicleSubmit}
           onCancel={() => {
             setViewMode("list");
             setEditingVehicle(undefined);
@@ -294,9 +301,36 @@ export default function Vehicles() {
         </Box>
 
         {/* Search & Filters */}
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ alignItems: "stretch" }}>
           <Grid size={{ xs: 12, md: 8 }}>
-            <SearchInput value={searchQuery} onChange={setSearchQuery} />
+            <Paper
+              variant="outlined"
+              sx={{ p: 2, borderRadius: 2, height: "100%" }}
+            >
+              <Stack spacing={1}>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Try a vehicle ID, name, or type"
+                />
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    Showing {filteredVehicles.length} of {vehicles.length} vehicles
+                  </Typography>
+                  {searchQuery && (
+                    <Button size="small" onClick={() => setSearchQuery("")}>
+                      Clear search
+                    </Button>
+                  )}
+                </Stack>
+              </Stack>
+            </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <VehicleFilterPanel onFilterChange={setFilters} />
@@ -323,6 +357,7 @@ export default function Vehicles() {
           onSort={handleSort}
           onEdit={handleEditVehicle}
           onDelete={handleDeleteVehicle}
+          onView={handleViewVehicle}
         />
 
         {/* Delete Modal */}
@@ -337,6 +372,15 @@ export default function Vehicles() {
             setVehicleToDelete(null);
           }}
           isLoading={isLoading}
+        />
+
+        <VehicleDetailModal
+          isOpen={detailModalOpen}
+          vehicle={selectedVehicleForView}
+          onClose={() => {
+            setDetailModalOpen(false);
+            setSelectedVehicleForView(null);
+          }}
         />
       </Stack>
     </Container>

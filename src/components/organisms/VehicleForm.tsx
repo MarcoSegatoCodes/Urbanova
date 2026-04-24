@@ -23,7 +23,14 @@ interface Props {
   isLoading?: boolean;
 }
 
-const vehicleTypes: VehicleType[] = ["BIKE", "SCOOTER", "CAR", "BUS"];
+const vehicleTypes: VehicleType[] = [
+  "BIKE",
+  "SCOOTER",
+  "CAR",
+  "ELECTRIC_CAR",
+  "BUS",
+  "ELECTRIC_BUS",
+];
 const vehicleStatuses: VehicleStatus[] = [
   "AVAILABLE",
   "IN_USE",
@@ -44,7 +51,9 @@ const typeLabels: Record<VehicleType, string> = {
   BIKE: "Bike",
   SCOOTER: "Scooter",
   CAR: "Car",
+  ELECTRIC_CAR: "Electric Car",
   BUS: "Bus",
+  ELECTRIC_BUS: "Electric Bus",
 };
 
 interface FormErrors {

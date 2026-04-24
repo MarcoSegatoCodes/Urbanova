@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   Button,
+  Chip,
   TextField,
   FormControl,
   InputLabel,
@@ -17,6 +18,8 @@ import {
   Typography,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import type { VehicleStatus, VehicleType } from "../../types";
 
 interface Props {
@@ -39,9 +42,17 @@ const vehicleStatuses: VehicleStatus[] = [
   "CHARGING",
   "OUT_OF_SERVICE",
 ];
-const vehicleTypes: VehicleType[] = ["BIKE", "SCOOTER", "CAR", "BUS"];
 
-const statusLabels: Record<VehicleStatus, string> = {
+const vehicleTypes: VehicleType[] = [
+  "BIKE",
+  "SCOOTER",
+  "CAR",
+  "ELECTRIC_CAR",
+  "BUS",
+  "ELECTRIC_BUS",
+];
+
+const statusLabels: Record<string, string> = {
   AVAILABLE: "Available",
   IN_USE: "In Use",
   MAINTENANCE: "Maintenance",
@@ -49,16 +60,32 @@ const statusLabels: Record<VehicleStatus, string> = {
   OUT_OF_SERVICE: "Out of Service",
 };
 
-const typeLabels: Record<VehicleType, string> = {
+const typeLabels: Record<string, string> = {
   BIKE: "Bike",
   SCOOTER: "Scooter",
   CAR: "Car",
+  ELECTRIC_CAR: "Electric Car",
   BUS: "Bus",
+  ELECTRIC_BUS: "Electric Bus",
+};
+
+const countActiveFilters = (filters: FilterState): number =>
+  Object.values(filters).filter(
+    (value) => value !== undefined && value !== "" && value !== false,
+  ).length;
+
+const toNumberOrUndefined = (raw: string): number | undefined => {
+  if (!raw.trim()) return undefined;
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return undefined;
+
+  return parsed;
 };
 
 export default function VehicleFilterPanel({ onFilterChange }: Props) {
   const [filters, setFilters] = useState<FilterState>({});
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -70,45 +97,57 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
     onFilterChange({});
   };
 
-  const filterCount = Object.keys(filters).length;
+  const filterCount = countActiveFilters(filters);
 
   return (
-    <Card>
+    <Card variant="outlined" sx={{ borderRadius: 2 }}>
       <CardContent>
-        <Button
-          startIcon={<FilterListIcon />}
-          onClick={() => setShowFilters(!showFilters)}
-          fullWidth
+        <Box
           sx={{
-            justifyContent: "flex-start",
-            mb: 2,
-            fontWeight: 600,
-            color: "primary.main",
-            "&:hover": {
-              backgroundColor: "transparent",
-            },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+            gap: 1,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              pr: 2,
-            }}
-          >
-            <span>🔍 Filters</span>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <FilterListIcon color="primary" fontSize="small" />
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Filters
+            </Typography>
             {filterCount > 0 && (
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                ({filterCount} active)
-              </Typography>
+              <Chip label={`${filterCount} active`} size="small" color="primary" />
             )}
-          </Box>
-        </Button>
+          </Stack>
+
+          <Stack direction="row" spacing={1}>
+            {filterCount > 0 && (
+              <Button size="small" onClick={resetFilters}>
+                Reset
+              </Button>
+            )}
+            <Button
+              size="small"
+              onClick={() => setShowFilters((prev) => !prev)}
+              endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            >
+              {showFilters ? "Hide" : "Show"}
+            </Button>
+          </Stack>
+        </Box>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: "block", mb: 2 }}
+        >
+          Narrow results by status, type, battery range, station, and
+          maintenance.
+        </Typography>
 
         <Collapse in={showFilters}>
           <Stack spacing={3}>
-            {/* Status Filter */}
             <Box>
               <Typography
                 variant="subtitle2"
@@ -131,14 +170,13 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   <MenuItem value="">All Statuses</MenuItem>
                   {vehicleStatuses.map((status) => (
                     <MenuItem key={status} value={status}>
-                      {statusLabels[status]}
+                      {statusLabels[status] || status}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Box>
 
-            {/* Type Filter */}
             <Box>
               <Typography
                 variant="subtitle2"
@@ -161,14 +199,13 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   <MenuItem value="">All Types</MenuItem>
                   {vehicleTypes.map((type) => (
                     <MenuItem key={type} value={type}>
-                      {typeLabels[type]}
+                      {typeLabels[type] || type}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Box>
 
-            {/* Battery Range */}
             <Box>
               <Typography
                 variant="subtitle2"
@@ -182,11 +219,11 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   label="Min"
                   size="small"
                   slotProps={{ input: { inputProps: { min: 0, max: 100 } } }}
-                  value={filters.batteryMin || 0}
+                  value={filters.batteryMin ?? ""}
                   onChange={(e) =>
                     handleFilterChange({
                       ...filters,
-                      batteryMin: Number(e.target.value),
+                      batteryMin: toNumberOrUndefined(e.target.value),
                     })
                   }
                 />
@@ -194,23 +231,18 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   type="number"
                   label="Max"
                   size="small"
-                  slotProps={{
-                    input: {
-                      inputProps: { min: 0, max: 100 },
-                    },
-                  }}
-                  value={filters.batteryMax || 100}
+                  slotProps={{ input: { inputProps: { min: 0, max: 100 } } }}
+                  value={filters.batteryMax ?? ""}
                   onChange={(e) =>
                     handleFilterChange({
                       ...filters,
-                      batteryMax: Number(e.target.value),
+                      batteryMax: toNumberOrUndefined(e.target.value),
                     })
                   }
                 />
               </Box>
             </Box>
 
-            {/* Station Filter */}
             <Box>
               <Typography
                 variant="subtitle2"
@@ -219,7 +251,7 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                 Current Station
               </Typography>
               <TextField
-                label="Station ID (e.g., ST-001)"
+                label="Station ID (e.g. ST-001)"
                 size="small"
                 fullWidth
                 value={filters.station || ""}
@@ -232,7 +264,6 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
               />
             </Box>
 
-            {/* Maintenance Due */}
             <FormControlLabel
               control={
                 <Checkbox
@@ -245,20 +276,10 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   }
                 />
               }
-              label={
-                <Typography variant="body2">
-                  ⚠️ Show only maintenance due soon
-                </Typography>
-              }
+              label={<Typography variant="body2">Show maintenance due only</Typography>}
             />
 
-            {/* Reset Button */}
-            <Button
-              variant="outlined"
-              onClick={resetFilters}
-              fullWidth
-              sx={{ mt: 2 }}
-            >
+            <Button variant="outlined" onClick={resetFilters} fullWidth>
               Clear All Filters
             </Button>
           </Stack>
