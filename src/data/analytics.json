@@ -8,7 +8,11 @@
     "totalTripsThisMonth": 1284,
     "co2SavedToday": 38.5,
     "co2SavedThisMonth": 1050.2,
-    "co2SavedAllTime": 12450.8
+    "co2SavedAllTime": 12450.8,
+    "averageTripDurationMinutes": 18,
+    "fleetUtilizationRate": 75,
+    "mostPopularStation": "Central Station",
+    "peakHour": "08:00 - 09:00"
   },
   "tripsByDayOfWeek": [
     { "day": "Mon", "trips": 180 },
@@ -30,5 +34,17 @@
     { "month": "Feb", "co2": 920.3 },
     { "month": "Mar", "co2": 1015.8 },
     { "month": "Apr", "co2": 780.2 }
+  ],
+  "usageByStation": [
+    { "station": "Central", "usage": 450 },
+    { "station": "University", "usage": 380 },
+    { "station": "Park", "usage": 210 },
+    { "station": "Mall", "usage": 190 }
+  ],
+  "batteryConsumptionOverTime": [
+    { "time": "08:00", "consumption": 12 },
+    { "time": "12:00", "consumption": 25 },
+    { "time": "16:00", "consumption": 18 },
+    { "time": "20:00", "consumption": 8 }
   ]
 }

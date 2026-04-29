@@ -37,7 +37,9 @@ export const getCO2SavedByMonth = (): CO2ByMonth[] => {
 };
 
 // --- WRITE Operations ---
-export const updateAnalytics = (updates: Partial<Analytics>): Analytics | null => {
+export const updateAnalytics = (
+  updates: Partial<Analytics>,
+): Analytics | null => {
   if (!analytics) return null;
 
   analytics = {
