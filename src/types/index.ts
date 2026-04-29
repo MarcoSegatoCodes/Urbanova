@@ -1,5 +1,5 @@
 export * from "./vehicle.types";
-export * from "./station.types";
+export type { Station } from './station.types';
 export * from "./user.types";
 export * from "./ticket.types";
 export * from "./trip.types";
