@@ -15,7 +15,6 @@ import {
   TicketsTable,
 } from "../components/organisms";
 import {
-  assignMaintenanceTicket,
   createMaintenanceTicket,
   getAllMaintenanceTickets,
   getAllStations,
@@ -39,10 +38,17 @@ const DEFAULT_FILTERS: TicketListFilters = {
   priority: "ALL",
   issueType: "ALL",
   assignedTo: "ALL",
+  hideInactive: true,
   dateFrom: "",
   dateTo: "",
   search: "",
 };
+
+const INACTIVE_STATUSES = new Set<TicketStatus>([
+  "RESOLVED",
+  "CLOSED",
+  "CANCELLED",
+]);
 
 const PRIORITY_RANK: Record<string, number> = {
   LOW: 1,
@@ -101,6 +107,8 @@ export default function Tickets() {
     const term = filters.search.trim().toLowerCase();
 
     return tickets.filter((ticket) => {
+      if (filters.hideInactive && INACTIVE_STATUSES.has(ticket.status)) return false;
+
       if (filters.status !== "ALL" && ticket.status !== filters.status) return false;
       if (filters.priority !== "ALL" && ticket.priority !== filters.priority) return false;
       if (filters.issueType !== "ALL" && ticket.issueType !== filters.issueType)
@@ -162,24 +170,12 @@ export default function Tickets() {
     }
   };
 
-  const handleAssign = (ticketId: string, technicianId: string | null) => {
-    try {
-      setPageError("");
-      assignMaintenanceTicket(ticketId, technicianId);
-      refreshTickets();
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to assign technician.";
-      setPageError(message);
-    }
-  };
-
   const handleSaveDetail = (ticketId: string, updates: Partial<Ticket>) => {
     try {
       setPageError("");
       updateMaintenanceTicket(ticketId, updates);
       refreshTickets();
-      setSelectedTicket(getAllMaintenanceTickets().find((ticket) => ticket.id === ticketId) || null);
+      setSelectedTicket(null);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to save ticket changes.";
@@ -253,7 +249,6 @@ export default function Tickets() {
         sortDirection={sortDirection}
         onSortRequest={handleHeaderSortRequest}
         onStatusChange={handleStatusChange}
-        onAssign={handleAssign}
         onRowClick={(ticket) => setSelectedTicket(ticket)}
       />
 

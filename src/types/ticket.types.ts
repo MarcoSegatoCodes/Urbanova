@@ -87,6 +87,7 @@ export interface TicketListFilters {
   priority: TicketPriority | "ALL";
   issueType: IssueType | "ALL";
   assignedTo: string | "ALL";
+  hideInactive: boolean;
   dateFrom: string;
   dateTo: string;
   search: string;

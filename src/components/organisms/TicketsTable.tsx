@@ -3,7 +3,6 @@ import {
   MenuItem,
   Paper,
   Select,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -37,7 +36,6 @@ interface TicketsTableProps {
   sortDirection: SortDirection;
   onSortRequest: (sortBy: "priority" | "status") => void;
   onStatusChange: (ticketId: string, status: TicketStatus) => void;
-  onAssign: (ticketId: string, technicianId: string | null) => void;
   onRowClick: (ticket: Ticket) => void;
 }
 
@@ -56,7 +54,6 @@ export default function TicketsTable({
   sortDirection,
   onSortRequest,
   onStatusChange,
-  onAssign,
   onRowClick,
 }: TicketsTableProps) {
   if (tickets.length === 0) {
@@ -144,42 +141,20 @@ export default function TicketsTable({
                 <TableCell>{formatDate(ticket.createdAt)}</TableCell>
                 <TableCell>
                   <Box onClick={(event) => event.stopPropagation()}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
-                      <Select
-                        size="small"
-                        value={ticket.status}
-                        onChange={(event) =>
-                          onStatusChange(
-                            ticket.id,
-                            event.target.value as TicketStatus,
-                          )
-                        }
-                        sx={{ minWidth: 160 }}
-                      >
-                        {TICKET_STATUS_OPTIONS.map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {status.replace("_", " ")}
-                          </MenuItem>
-                        ))}
-                      </Select>
-
-                      <Select
-                        size="small"
-                        value={ticket.assignedTo || ""}
-                        onChange={(event) =>
-                          onAssign(ticket.id, event.target.value || null)
-                        }
-                        displayEmpty
-                        sx={{ minWidth: 180 }}
-                      >
-                        <MenuItem value="">Unassigned</MenuItem>
-                        {technicians.map((technician) => (
-                          <MenuItem key={technician.id} value={technician.id}>
-                            {technician.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Stack>
+                    <Select
+                      size="small"
+                      value={ticket.status}
+                      onChange={(event) =>
+                        onStatusChange(ticket.id, event.target.value as TicketStatus)
+                      }
+                      sx={{ minWidth: 180 }}
+                    >
+                      {TICKET_STATUS_OPTIONS.map((status) => (
+                        <MenuItem key={status} value={status}>
+                          {status.replace("_", " ")}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </Box>
                 </TableCell>
               </TableRow>
