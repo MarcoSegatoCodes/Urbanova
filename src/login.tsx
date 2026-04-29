@@ -163,7 +163,7 @@ function LoginForm() {
                   maxWidth: 480,
                 }}
               >
-                La cabina di regia per la tua mobilit urbana.
+                La cabina di regia per la tua mobilità urbana.
               </Typography>
               <Typography
                 variant="body1"
