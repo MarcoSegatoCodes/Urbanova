@@ -35,7 +35,7 @@ export const getTicketsByType = (type: TicketType): Ticket[] => {
 };
 
 export const getValidTickets = (): Ticket[] => {
-  return tickets.filter((t) => t.status === "VALID");
+  return tickets.filter((t) => t.status === "valid");
 };
 
 export const getTicketsByTrip = (tripId: string): Ticket[] => {
@@ -70,19 +70,19 @@ export const updateTicket = (
 };
 
 export const useTicket = (id: string): Ticket | undefined => {
-  return updateTicket(id, { status: "USED", usedAt: new Date().toISOString() });
+  return updateTicket(id, { status: "used", usedAt: new Date().toISOString() });
 };
 
 export const cancelTicket = (id: string): Ticket | undefined => {
-  return updateTicket(id, { status: "CANCELLED" });
+  return updateTicket(id, { status: "cancelled" });
 };
 
 export const refundTicket = (id: string): Ticket | undefined => {
-  return updateTicket(id, { status: "REFUNDED" });
+  return updateTicket(id, { status: "refunded" });
 };
 
 export const expireTicket = (id: string): Ticket | undefined => {
-  return updateTicket(id, { status: "EXPIRED" });
+  return updateTicket(id, { status: "expired" });
 };
 
 export const deleteTicket = (id: string): boolean => {
@@ -105,16 +105,13 @@ export const getTicketCountByStatus = (): Record<TicketStatus, number> => {
 };
 
 export const getTotalRevenue = (): number => {
-  return tickets.reduce((sum, t) => sum + (t.price ?? 0), 0);
+  return tickets.reduce((sum, t) => sum + t.price, 0);
 };
 
 export const getRevenueByPaymentMethod = (): Record<PaymentMethod, number> => {
   return tickets.reduce(
     (acc, t) => {
-      if (!t.paymentMethod) {
-        return acc;
-      }
-      acc[t.paymentMethod] = (acc[t.paymentMethod] || 0) + (t.price ?? 0);
+      acc[t.paymentMethod] = (acc[t.paymentMethod] || 0) + t.price;
       return acc;
     },
     {} as Record<PaymentMethod, number>,
@@ -126,7 +123,7 @@ export const searchTickets = (query: string): Ticket[] => {
   return tickets.filter(
     (t) =>
       t.id.toLowerCase().includes(lowerQuery) ||
-      t.userId?.toLowerCase().includes(lowerQuery) ||
+      t.userId.toLowerCase().includes(lowerQuery) ||
       t.qrCode?.toLowerCase().includes(lowerQuery),
   );
 };
@@ -136,13 +133,13 @@ export const validateTicket = (
 ): { valid: boolean; reason?: string } => {
   const ticket = getTicketById(id);
   if (!ticket) return { valid: false, reason: "Ticket not found" };
-  if (ticket.status !== "VALID")
+  if (ticket.status !== "valid")
     return { valid: false, reason: `Ticket is ${ticket.status}` };
 
   const now = new Date().toISOString();
-  if (ticket.validFrom && ticket.validFrom > now)
+  if (ticket.validFrom > now)
     return { valid: false, reason: "Ticket not yet valid" };
-  if (ticket.validUntil && ticket.validUntil < now)
+  if (ticket.validUntil < now)
     return { valid: false, reason: "Ticket expired" };
 
   return { valid: true };

@@ -25,13 +25,11 @@ export const getUsersByRole = (role: UserRole): User[] => {
 };
 
 export const getUsersByStatus = (status: UserStatus): User[] => {
-  return users.filter(
-    (u) => (u.status ?? (u.isActive ? "ACTIVE" : "INACTIVE")) === status,
-  );
+  return users.filter((u) => u.status === status);
 };
 
 export const getActiveUsers = (): User[] => {
-  return users.filter((u) => (u.status ?? "ACTIVE") === "ACTIVE");
+  return users.filter((u) => u.status === "active");
 };
 
 export const getUsersWithValidPass = (): User[] => {
@@ -39,7 +37,7 @@ export const getUsersWithValidPass = (): User[] => {
   return users.filter(
     (u) =>
       u.passType &&
-      u.passType !== "NONE" &&
+      u.passType !== "none" &&
       u.passExpiryDate &&
       u.passExpiryDate > now,
   );
@@ -65,10 +63,7 @@ export const updateUserStatus = (
   id: string,
   status: UserStatus,
 ): User | undefined => {
-  return updateUser(id, {
-    status,
-    isActive: status === "ACTIVE",
-  });
+  return updateUser(id, { status });
 };
 
 export const updateUserPass = (
@@ -117,14 +112,14 @@ export const searchUsers = (query: string): User[] => {
   return users.filter(
     (u) =>
       u.id.toLowerCase().includes(lowerQuery) ||
-      `${u.firstName} ${u.lastName}`.toLowerCase().includes(lowerQuery) ||
+      u.name.toLowerCase().includes(lowerQuery) ||
       u.email.toLowerCase().includes(lowerQuery),
   );
 };
 
 export const authenticateUser = (email: string): User | undefined => {
   const user = getUserByEmail(email);
-  if (user && (user.status ?? (user.isActive ? "ACTIVE" : "INACTIVE")) === "ACTIVE") {
+  if (user && user.status === "active") {
     recordLogin(user.id);
     return user;
   }
