@@ -6,8 +6,8 @@ import type {
   PerformanceStats,
   TimePeriod,
   MetricType,
-  MetricDataPoint,
-} from "../types";
+  MetricDataPoint
+} from '../types'
 
 const STORAGE_KEY = "analytics";
 
