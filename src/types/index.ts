@@ -1,3 +1,4 @@
+export * from "./common.types";
 export * from "./vehicle.types";
 export * from "./station.types";
 export * from "./user.types";

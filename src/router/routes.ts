@@ -1,16 +1,8 @@
-/**
- * Route configuration
- * Add new routes here to make them available throughout the app
- *
- * Usage:
- * - path: URL path (use :param for dynamic segments)
- * - component: The React component to render
- * - name: Display name (useful for navigation)
- * - icon: Optional icon component for menu/navigation
- */
 import { lazy } from "react";
+import type { ComponentType } from "react";
 
 // Lazy load pages for better performance
+const Login = lazy(() => import("../login"));
 const Home = lazy(() => import("../pages/Home"));
 const Stations = lazy(() => import("../pages/Stations"));
 const Trips = lazy(() => import("../pages/Trips"));
@@ -22,18 +14,23 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 
 export interface RouteConfig {
   path: string;
-  component: React.ComponentType;
+  component: ComponentType;
   name: string;
-  icon?: React.ComponentType;
+  icon?: ComponentType;
   isIndex?: boolean;
 }
 
 export const routes: RouteConfig[] = [
   {
     path: "/",
+    component: Login,
+    name: "Login",
+    isIndex: true,
+  },
+  {
+    path: "/home",
     component: Home,
     name: "Home",
-    isIndex: true,
   },
   {
     path: "/stations",

@@ -1,18 +1,8 @@
-import { Button } from "@mui/material";
-import { AccountBoxSharp } from "@mui/icons-material";
-import ServiceTests from "./components/ServiceTests";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
 
 function App() {
-  return (
-    <>
-      <Button variant="contained">
-        <AccountBoxSharp />
-        Hello
-      </Button>
-
-      <ServiceTests />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

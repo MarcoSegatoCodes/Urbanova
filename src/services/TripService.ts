@@ -47,16 +47,19 @@ export const getTripsByRoute = (routeId: string): Trip[] => {
 export const getUpcomingTrips = (): Trip[] => {
   const now = new Date().toISOString();
   return trips.filter(
-    (t) => t.scheduledDeparture > now && t.status === "scheduled",
+    (t) =>
+      Boolean(t.scheduledDeparture) &&
+      t.scheduledDeparture! > now &&
+      t.status === "SCHEDULED",
   );
 };
 
 export const getActiveTrips = (): Trip[] => {
-  return trips.filter((t) => t.status === "in-progress");
+  return trips.filter((t) => t.status === "IN_PROGRESS");
 };
 
 export const getDelayedTrips = (): Trip[] => {
-  return trips.filter((t) => t.status === "delayed");
+  return trips.filter((t) => t.status === "DELAYED");
 };
 
 // --- TRIP WRITE Operations ---
@@ -84,27 +87,27 @@ export const updateTripStatus = (
 
 export const startTrip = (id: string): Trip | undefined => {
   return updateTrip(id, {
-    status: "in-progress",
+    status: "IN_PROGRESS",
     actualDeparture: new Date().toISOString(),
   });
 };
 
 export const completeTrip = (id: string): Trip | undefined => {
   return updateTrip(id, {
-    status: "completed",
+    status: "COMPLETED",
     actualArrival: new Date().toISOString(),
   });
 };
 
 export const cancelTrip = (id: string): Trip | undefined => {
-  return updateTrip(id, { status: "cancelled" });
+  return updateTrip(id, { status: "CANCELLED" });
 };
 
 export const setTripDelay = (
   id: string,
   delay: TripDelay,
 ): Trip | undefined => {
-  return updateTrip(id, { status: "delayed", delay });
+  return updateTrip(id, { status: "DELAYED", delay });
 };
 
 export const updatePassengerCount = (
@@ -172,7 +175,7 @@ export const searchTrips = (query: string): Trip[] => {
   return trips.filter(
     (t) =>
       t.id.toLowerCase().includes(lowerQuery) ||
-      t.routeId.toLowerCase().includes(lowerQuery) ||
+      t.routeId?.toLowerCase().includes(lowerQuery) ||
       t.vehicleId.toLowerCase().includes(lowerQuery),
   );
 };

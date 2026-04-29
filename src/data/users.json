@@ -2,7 +2,7 @@
   {
     "id": "USR-001",
     "email": "admin@urbanova.com",
-    "password": "admin",
+    "password": "admin123",
     "firstName": "Marco",
     "lastName": "Segato",
     "role": "ADMIN",

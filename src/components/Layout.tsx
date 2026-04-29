@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -11,6 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
   CssBaseline,
+  IconButton,
 } from "@mui/material";
 import {
   Home,
@@ -20,12 +22,19 @@ import {
   Analytics,
   Settings,
   DirectionsCar,
+  Logout,
 } from "@mui/icons-material";
 import { routes } from "../router/routes";
 
+// Logout function
+const handleLogout = () => {
+  localStorage.removeItem("auth");
+  window.location.href = "/";
+};
+
 const drawerWidth = 240;
 
-const iconMap: Record<string, React.ComponentType> = {
+const iconMap: Record<string, ComponentType> = {
   Home: Home,
   Stations: Map,
   Trips: DirectionsBus,
@@ -50,7 +59,7 @@ export default function Layout() {
         </Typography>
       </Toolbar>
       <List>
-        {routes.map((route) => {
+        {routes.filter((route) => route.path !== "/").map((route) => {
           const Icon = iconMap[route.name];
           return (
             <ListItem key={route.path} disablePadding>
@@ -86,6 +95,13 @@ export default function Layout() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {pageTitle}
           </Typography>
+          <IconButton
+            color="inherit"
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <Logout />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box

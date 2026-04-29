@@ -1,3 +1,5 @@
+import type { Coordinates } from "./common.types";
+
 export type StationType =
   | "HYBRID"
   | "BIKE_ONLY"
@@ -12,11 +14,6 @@ export type StationStatus =
   | "COMING_SOON"
   | string;
 
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
-
 export interface Station {
   id: string;
   name: string;
@@ -30,4 +27,6 @@ export interface Station {
   availableEVehicles: number;
   chargingPorts: number;
   lastInspection: string;
+  connectedStationIds?: string[];
+  amenities?: Record<string, boolean>;
 }
