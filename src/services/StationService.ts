@@ -25,7 +25,7 @@ export const getStationsByStatus = (status: StationStatus): Station[] => {
 };
 
 export const getOperationalStations = (): Station[] => {
-  return stations.filter((s) => s.status === "operational");
+  return stations.filter((s) => s.status === "OPERATIONAL");
 };
 
 export const getConnectedStations = (stationId: string): Station[] => {

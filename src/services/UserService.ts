@@ -4,6 +4,9 @@ const STORAGE_KEY = "users";
 
 let users: User[] = [];
 
+const getDerivedStatus = (user: User): UserStatus =>
+  user.isActive ? "ACTIVE" : "INACTIVE";
+
 // --- INIT ---
 export const initUsers = (data: User[]): void => {
   users = [...data];
@@ -25,11 +28,11 @@ export const getUsersByRole = (role: UserRole): User[] => {
 };
 
 export const getUsersByStatus = (status: UserStatus): User[] => {
-  return users.filter((u) => u.status === status);
+  return users.filter((u) => getDerivedStatus(u) === status);
 };
 
 export const getActiveUsers = (): User[] => {
-  return users.filter((u) => u.status === "active");
+  return users.filter((u) => u.isActive);
 };
 
 export const getUsersWithValidPass = (): User[] => {
@@ -37,7 +40,7 @@ export const getUsersWithValidPass = (): User[] => {
   return users.filter(
     (u) =>
       u.passType &&
-      u.passType !== "none" &&
+      u.passType.toUpperCase() !== "NONE" &&
       u.passExpiryDate &&
       u.passExpiryDate > now,
   );
@@ -63,7 +66,7 @@ export const updateUserStatus = (
   id: string,
   status: UserStatus,
 ): User | undefined => {
-  return updateUser(id, { status });
+  return updateUser(id, { isActive: status === "ACTIVE" });
 };
 
 export const updateUserPass = (
@@ -112,14 +115,15 @@ export const searchUsers = (query: string): User[] => {
   return users.filter(
     (u) =>
       u.id.toLowerCase().includes(lowerQuery) ||
-      u.name.toLowerCase().includes(lowerQuery) ||
+      u.firstName.toLowerCase().includes(lowerQuery) ||
+      u.lastName.toLowerCase().includes(lowerQuery) ||
       u.email.toLowerCase().includes(lowerQuery),
   );
 };
 
 export const authenticateUser = (email: string): User | undefined => {
   const user = getUserByEmail(email);
-  if (user && user.status === "active") {
+  if (user && user.isActive) {
     recordLogin(user.id);
     return user;
   }

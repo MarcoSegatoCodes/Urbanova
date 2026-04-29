@@ -12,16 +12,20 @@ export type StationStatus =
   | "COMING_SOON"
   | string;
 
-export interface Coordinates {
+export interface StationCoordinates {
   lat: number;
   lng: number;
+}
+
+export interface StationAmenities {
+  [key: string]: boolean | undefined;
 }
 
 export interface Station {
   id: string;
   name: string;
   address: string;
-  coordinates: Coordinates;
+  coordinates: StationCoordinates;
   type: StationType;
   status: StationStatus;
   totalDocks: number;
@@ -30,4 +34,6 @@ export interface Station {
   availableEVehicles: number;
   chargingPorts: number;
   lastInspection: string;
+  connectedStationIds?: string[];
+  amenities?: StationAmenities;
 }
