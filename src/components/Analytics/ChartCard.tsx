@@ -32,7 +32,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, children, hasData =
     if (chartRef.current === null) return;
 
     try {
-      // Fotografa tutto trenne l'elemento con id "export-controls"
+      // Download everything except the item with id "export-controls"
       const filter = (node: HTMLElement) => {
         return node.id !== 'export-controls';
       };

@@ -54,7 +54,7 @@ export default function Analytics() {
                   value: v.value,
                   label: v.type,
                 })),
-                innerRadius: 30,
+                innerRadius: 20,
                 paddingAngle: 2,
               }]}
               slotProps={{ legend: { direction: 'horizontal' as const, position: { vertical: 'bottom', horizontal: 'center' } } }}
@@ -71,7 +71,9 @@ export default function Analytics() {
                   id: i,
                   value: v.value,
                   label: v.type,
-                }))
+                })),
+                innerRadius: 20,
+                paddingAngle: 2,
               }]}
               slotProps={{ legend: { direction: 'horizontal' as const, position: { vertical: 'bottom', horizontal: 'center' } } }}
             />

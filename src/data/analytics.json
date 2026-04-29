@@ -11,40 +11,56 @@
     "co2SavedAllTime": 12450.8,
     "averageTripDurationMinutes": 18,
     "fleetUtilizationRate": 75,
-    "mostPopularStation": "Central Station",
-    "peakHour": "08:00 - 09:00"
+    "mostPopularStation": "Downtown",
+    "peakHour": "07:00 - 09:00"
   },
   "tripsByDayOfWeek": [
-    { "day": "Mon", "trips": 180 },
-    { "day": "Tue", "trips": 195 },
-    { "day": "Wed", "trips": 210 },
-    { "day": "Thu", "trips": 188 },
+    { "day": "Mon", "trips": 212 },
+    { "day": "Tue", "trips": 124 },
+    { "day": "Wed", "trips": 137 },
+    { "day": "Thu", "trips": 164 },
     { "day": "Fri", "trips": 220 },
-    { "day": "Sat", "trips": 165 },
-    { "day": "Sun", "trips": 126 }
+    { "day": "Sat", "trips": 250 },
+    { "day": "Sun", "trips": 314 }
   ],
   "tripsByVehicleType": [
     { "type": "BIKE", "value": 580 },
-    { "type": "SCOOTER", "value": 420 },
-    { "type": "CAR", "value": 180 },
-    { "type": "BUS", "value": 104 }
+    { "type": "SCOOTER", "value": 285 },
+    { "type": "CAR", "value": 210 },
+    { "type": "BUS", "value": 325 }
   ],
   "co2SavedByMonth": [
     { "month": "Jan", "co2": 890.5 },
     { "month": "Feb", "co2": 920.3 },
     { "month": "Mar", "co2": 1015.8 },
-    { "month": "Apr", "co2": 780.2 }
+    { "month": "Apr", "co2": 780.2 },
+    { "month": "May", "co2": 1080.2 },
+    { "month": "Jun", "co2": 1106.3 },
+    { "month": "Jul", "co2": 1018.9 },
+    { "month": "Aug", "co2": 1518.6 },
+    { "month": "Sep", "co2": 856.8 },
+    { "month": "Oct", "co2": 797.5 },
+    { "month": "Nov", "co2": 664.7 },
+    { "month": "Dec", "co2": 938.1 }
   ],
   "usageByStation": [
-    { "station": "Central", "usage": 450 },
-    { "station": "University", "usage": 380 },
-    { "station": "Park", "usage": 210 },
-    { "station": "Mall", "usage": 190 }
+    { "station": "Downtown", "usage": 481 },
+    { "station": "Mall", "usage": 367 },
+    { "station": "Park", "usage": 255 },
+    { "station": "University", "usage": 333 }
   ],
   "batteryConsumptionOverTime": [
+    { "time": "02:00", "consumption": 1 },
+    { "time": "04:00", "consumption": 1 },
+    { "time": "06:00", "consumption": 2 },
     { "time": "08:00", "consumption": 12 },
+    { "time": "10:00", "consumption": 18 },
     { "time": "12:00", "consumption": 25 },
-    { "time": "16:00", "consumption": 18 },
-    { "time": "20:00", "consumption": 8 }
+    { "time": "14:00", "consumption": 30 },
+    { "time": "16:00", "consumption": 22 },
+    { "time": "18:00", "consumption": 15 },
+    { "time": "20:00", "consumption": 8 },
+    { "time": "22:00", "consumption": 5 },
+    { "time": "00:00", "consumption": 1 }
   ]
 }
