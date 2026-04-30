@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { PriorityBadge, StatusBadge } from "../atoms";
+import { PriorityBadge } from "../atoms";
 import type {
   SortDirection,
   Ticket,
@@ -30,7 +30,6 @@ interface TechnicianOption {
 interface TicketsTableProps {
   tickets: Ticket[];
   vehicleNamesById: Record<string, string>;
-  stationNamesById: Record<string, string>;
   technicians: TechnicianOption[];
   sortBy: TicketSortBy;
   sortDirection: SortDirection;
@@ -39,16 +38,33 @@ interface TicketsTableProps {
   onRowClick: (ticket: Ticket) => void;
 }
 
-const formatDate = (value: string): string =>
-  new Date(value).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+const padTwo = (value: number): string => String(value).padStart(2, "0");
+
+const formatDate = (value: string): string => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const day = padTwo(date.getDate());
+  const month = padTwo(date.getMonth() + 1);
+  const year = date.getFullYear();
+  const hours = padTwo(date.getHours());
+  const minutes = padTwo(date.getMinutes());
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
+
+const statusToneByValue: Record<string, "error" | "warning" | "success" | "neutral"> = {
+  OPEN: "error",
+  IN_PROGRESS: "warning",
+  AWAITING_PARTS: "warning",
+  RESOLVED: "success",
+  CLOSED: "neutral",
+  CANCELLED: "neutral",
+};
 
 export default function TicketsTable({
   tickets,
   vehicleNamesById,
-  stationNamesById,
   technicians,
   sortBy,
   sortDirection,
@@ -72,7 +88,7 @@ export default function TicketsTable({
         <TableHead>
           <TableRow>
             <TableCell>Ticket</TableCell>
-            <TableCell>Asset</TableCell>
+            <TableCell>Vehicle</TableCell>
             <TableCell>Issue Type</TableCell>
             <TableCell
               sortDirection={sortBy === "priority" ? sortDirection : false}
@@ -85,6 +101,8 @@ export default function TicketsTable({
                 Priority
               </TableSortLabel>
             </TableCell>
+            <TableCell>Assigned</TableCell>
+            <TableCell>Created</TableCell>
             <TableCell sortDirection={sortBy === "status" ? sortDirection : false}>
               <TableSortLabel
                 active={sortBy === "status"}
@@ -94,19 +112,57 @@ export default function TicketsTable({
                 Status
               </TableSortLabel>
             </TableCell>
-            <TableCell>Assigned</TableCell>
-            <TableCell>Created</TableCell>
-            <TableCell>Quick Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {tickets.map((ticket) => {
-            const vehicleName = ticket.vehicleId
+            const vehicleNumber = ticket.vehicleId
               ? vehicleNamesById[ticket.vehicleId] || ticket.vehicleId
               : "-";
-            const stationName = ticket.stationId
-              ? stationNamesById[ticket.stationId] || ticket.stationId
-              : "-";
+            const statusTone = statusToneByValue[ticket.status] || "neutral";
+            const statusStyles = (theme: {
+              palette: {
+                error: { main: string; dark: string; contrastText: string };
+                warning: { main: string; dark: string; contrastText: string };
+                success: { main: string; dark: string; contrastText: string };
+                grey: Record<number, string>;
+              };
+            }) => {
+              if (statusTone === "neutral") {
+                return {
+                  minWidth: 170,
+                  fontWeight: 600,
+                  backgroundColor: theme.palette.grey[400],
+                  color: theme.palette.grey[900],
+                  "& .MuiSelect-icon": {
+                    color: theme.palette.grey[900],
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.grey[500],
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.grey[500],
+                  },
+                };
+              }
+
+              const palette = theme.palette[statusTone];
+              return {
+                minWidth: 170,
+                fontWeight: 600,
+                backgroundColor: palette.main,
+                color: palette.contrastText,
+                "& .MuiSelect-icon": {
+                  color: palette.contrastText,
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: palette.dark,
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: palette.dark,
+                },
+              };
+            };
             const assigned =
               technicians.find((tech) => tech.id === ticket.assignedTo)?.label ||
               "Unassigned";
@@ -122,20 +178,13 @@ export default function TicketsTable({
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {ticket.id}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {ticket.title}
-                  </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2">Vehicle: {vehicleName}</Typography>
-                  <Typography variant="body2">Station: {stationName}</Typography>
+                  <Typography variant="body2">{vehicleNumber}</Typography>
                 </TableCell>
                 <TableCell>{ticket.issueType}</TableCell>
                 <TableCell>
                   <PriorityBadge priority={ticket.priority} />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={ticket.status} />
                 </TableCell>
                 <TableCell>{assigned}</TableCell>
                 <TableCell>{formatDate(ticket.createdAt)}</TableCell>
@@ -147,7 +196,7 @@ export default function TicketsTable({
                       onChange={(event) =>
                         onStatusChange(ticket.id, event.target.value as TicketStatus)
                       }
-                      sx={{ minWidth: 180 }}
+                      sx={statusStyles}
                     >
                       {TICKET_STATUS_OPTIONS.map((status) => (
                         <MenuItem key={status} value={status}>
