@@ -3,7 +3,6 @@ import { RouterProvider } from "react-router-dom";
 
 import { initializeServices } from "./bootstrap/initializeServices";
 import { router } from "./router";
-import { initializeServices } from "./bootstrap/initializeServices";
 
 initializeServices();
 

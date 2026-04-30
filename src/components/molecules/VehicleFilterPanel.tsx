@@ -1,34 +1,32 @@
 // components/Vehicle/molecules/VehicleFilterPanel.tsx
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
   Button,
   Chip,
-  TextField,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
   FormControlLabel,
   Checkbox,
   Box,
   Stack,
-  Collapse,
+  Slider,
   Typography,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import type { VehicleStatus, VehicleType } from "../../types";
+import { getAllStations } from "../../services";
 
 interface Props {
   onFilterChange: (filters: FilterState) => void;
 }
 
 export interface FilterState {
-  status?: VehicleStatus;
-  type?: VehicleType;
+  statuses?: VehicleStatus[];
+  types?: VehicleType[];
   batteryMin?: number;
   batteryMax?: number;
   station?: string;
@@ -69,27 +67,33 @@ const typeLabels: Record<string, string> = {
   ELECTRIC_BUS: "Electric Bus",
 };
 
-const countActiveFilters = (filters: FilterState): number =>
-  Object.values(filters).filter(
-    (value) => value !== undefined && value !== "" && value !== false,
-  ).length;
-
-const toNumberOrUndefined = (raw: string): number | undefined => {
-  if (!raw.trim()) return undefined;
-
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed)) return undefined;
-
-  return parsed;
+const countActiveFilters = (filters: FilterState): number => {
+  let count = 0;
+  if (filters.statuses?.length) count++;
+  if (filters.types?.length) count++;
+  if (filters.batteryMin !== undefined || filters.batteryMax !== undefined)
+    count++;
+  if (filters.station) count++;
+  if (filters.maintenanceDue) count++;
+  return count;
 };
 
 export default function VehicleFilterPanel({ onFilterChange }: Props) {
   const [filters, setFilters] = useState<FilterState>({});
   const [showFilters, setShowFilters] = useState(true);
+  const [stations, setStations] = useState<any[]>([]);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setStations(getAllStations());
+  }, []);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      onFilterChange(newFilters);
+    }, 300);
   };
 
   const resetFilters = () => {
@@ -97,163 +101,201 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
     onFilterChange({});
   };
 
+  const toggleStatus = (status: VehicleStatus) => {
+    const statuses = filters.statuses || [];
+    const newStatuses = statuses.includes(status)
+      ? statuses.filter((s) => s !== status)
+      : [...statuses, status];
+    handleFilterChange({
+      ...filters,
+      statuses: newStatuses.length > 0 ? newStatuses : undefined,
+    });
+  };
+
+  const toggleType = (type: VehicleType) => {
+    const types = filters.types || [];
+    const newTypes = types.includes(type)
+      ? types.filter((t) => t !== type)
+      : [...types, type];
+    handleFilterChange({
+      ...filters,
+      types: newTypes.length > 0 ? newTypes : undefined,
+    });
+  };
+
   const filterCount = countActiveFilters(filters);
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
-      <CardContent>
+      <CardContent sx={{ pb: "16px !important" }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 1,
+            mb: 1.5,
             gap: 1,
           }}
         >
-          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <Stack direction="row" spacing={0.8} sx={{ alignItems: "center" }}>
             <FilterListIcon color="primary" fontSize="small" />
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
               Filters
             </Typography>
             {filterCount > 0 && (
-              <Chip label={`${filterCount} active`} size="small" color="primary" />
+              <Chip
+                label={filterCount}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
             )}
           </Stack>
-
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={0.5}>
             {filterCount > 0 && (
-              <Button size="small" onClick={resetFilters}>
+              <Button
+                size="small"
+                onClick={resetFilters}
+                sx={{ fontSize: "0.75rem" }}
+              >
                 Reset
               </Button>
             )}
             <Button
               size="small"
               onClick={() => setShowFilters((prev) => !prev)}
-              endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              endIcon={
+                showFilters ? (
+                  <ExpandLessIcon fontSize="small" />
+                ) : (
+                  <ExpandMoreIcon fontSize="small" />
+                )
+              }
+              sx={{ fontSize: "0.75rem" }}
             >
               {showFilters ? "Hide" : "Show"}
             </Button>
           </Stack>
         </Box>
 
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: "block", mb: 2 }}
-        >
-          Narrow results by status, type, battery range, station, and
-          maintenance.
-        </Typography>
-
-        <Collapse in={showFilters}>
-          <Stack spacing={3}>
+        {showFilters && (
+          <Stack spacing={1.5}>
+            {/* Status Filter */}
             <Box>
               <Typography
-                variant="subtitle2"
-                sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  display: "block",
+                  mb: 0.8,
+                }}
               >
                 Status
               </Typography>
-              <FormControl fullWidth size="small">
-                <InputLabel>Filter by status</InputLabel>
-                <Select
-                  value={filters.status || ""}
-                  onChange={(e) =>
-                    handleFilterChange({
-                      ...filters,
-                      status: (e.target.value as VehicleStatus) || undefined,
-                    })
-                  }
-                  label="Filter by status"
-                >
-                  <MenuItem value="">All Statuses</MenuItem>
-                  {vehicleStatuses.map((status) => (
-                    <MenuItem key={status} value={status}>
-                      {statusLabels[status] || status}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-
-            <Box>
-              <Typography
-                variant="subtitle2"
-                sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}
-              >
-                Vehicle Type
-              </Typography>
-              <FormControl fullWidth size="small">
-                <InputLabel>Filter by type</InputLabel>
-                <Select
-                  value={filters.type || ""}
-                  onChange={(e) =>
-                    handleFilterChange({
-                      ...filters,
-                      type: (e.target.value as VehicleType) || undefined,
-                    })
-                  }
-                  label="Filter by type"
-                >
-                  <MenuItem value="">All Types</MenuItem>
-                  {vehicleTypes.map((type) => (
-                    <MenuItem key={type} value={type}>
-                      {typeLabels[type] || type}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-
-            <Box>
-              <Typography
-                variant="subtitle2"
-                sx={{ mb: 2, fontWeight: 600, color: "text.secondary" }}
-              >
-                Battery Level (%)
-              </Typography>
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <TextField
-                  type="number"
-                  label="Min"
-                  size="small"
-                  slotProps={{ input: { inputProps: { min: 0, max: 100 } } }}
-                  value={filters.batteryMin ?? ""}
-                  onChange={(e) =>
-                    handleFilterChange({
-                      ...filters,
-                      batteryMin: toNumberOrUndefined(e.target.value),
-                    })
-                  }
-                />
-                <TextField
-                  type="number"
-                  label="Max"
-                  size="small"
-                  slotProps={{ input: { inputProps: { min: 0, max: 100 } } }}
-                  value={filters.batteryMax ?? ""}
-                  onChange={(e) =>
-                    handleFilterChange({
-                      ...filters,
-                      batteryMax: toNumberOrUndefined(e.target.value),
-                    })
-                  }
-                />
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {vehicleStatuses.map((status) => (
+                  <Chip
+                    key={status}
+                    label={statusLabels[status]}
+                    onClick={() => toggleStatus(status)}
+                    variant={
+                      filters.statuses?.includes(status) ? "filled" : "outlined"
+                    }
+                    color={
+                      filters.statuses?.includes(status) ? "primary" : "default"
+                    }
+                    size="small"
+                    sx={{ fontSize: "0.75rem" }}
+                  />
+                ))}
               </Box>
             </Box>
 
+            {/* Type Filter */}
             <Box>
               <Typography
-                variant="subtitle2"
-                sx={{ mb: 1, fontWeight: 600, color: "text.secondary" }}
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  display: "block",
+                  mb: 0.8,
+                }}
+              >
+                Vehicle Type
+              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {vehicleTypes.map((type) => (
+                  <Chip
+                    key={type}
+                    label={typeLabels[type]}
+                    onClick={() => toggleType(type)}
+                    variant={
+                      filters.types?.includes(type) ? "filled" : "outlined"
+                    }
+                    color={
+                      filters.types?.includes(type) ? "primary" : "default"
+                    }
+                    size="small"
+                    sx={{ fontSize: "0.75rem" }}
+                  />
+                ))}
+              </Box>
+            </Box>
+
+            {/* Battery Slider */}
+            <Box>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  display: "block",
+                  mb: 1,
+                }}
+              >
+                Battery Level ({filters.batteryMin || 0}% -{" "}
+                {filters.batteryMax || 100}%)
+              </Typography>
+              <Slider
+                min={0}
+                max={100}
+                value={[filters.batteryMin || 0, filters.batteryMax || 100]}
+                onChange={(_, value: number | number[]) => {
+                  if (Array.isArray(value)) {
+                    handleFilterChange({
+                      ...filters,
+                      batteryMin: value[0],
+                      batteryMax: value[1],
+                    });
+                  }
+                }}
+                marks={[
+                  { value: 0, label: "0%" },
+                  { value: 50, label: "50%" },
+                  { value: 100, label: "100%" },
+                ]}
+                sx={{ mt: 2, mb: 1 }}
+              />
+            </Box>
+
+            {/* Station Filter */}
+            <Box>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  display: "block",
+                  mb: 0.8,
+                }}
               >
                 Current Station
               </Typography>
-              <TextField
-                label="Station ID (e.g. ST-001)"
-                size="small"
+              <Select
                 fullWidth
+                size="small"
                 value={filters.station || ""}
                 onChange={(e) =>
                   handleFilterChange({
@@ -261,12 +303,23 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                     station: e.target.value || undefined,
                   })
                 }
-              />
+                displayEmpty
+                sx={{ fontSize: "0.875rem" }}
+              >
+                <MenuItem value="">All Stations</MenuItem>
+                {stations.map((station) => (
+                  <MenuItem key={station.id} value={station.id}>
+                    {station.id} - {station.name}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
 
+            {/* Maintenance Filter */}
             <FormControlLabel
               control={
                 <Checkbox
+                  size="small"
                   checked={filters.maintenanceDue || false}
                   onChange={(e) =>
                     handleFilterChange({
@@ -276,14 +329,102 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
                   }
                 />
               }
-              label={<Typography variant="body2">Show maintenance due only</Typography>}
+              label={
+                <Typography variant="caption">
+                  Show maintenance due only
+                </Typography>
+              }
+              sx={{ m: 0 }}
             />
 
-            <Button variant="outlined" onClick={resetFilters} fullWidth>
-              Clear All Filters
-            </Button>
+            {/* Active Filters Display */}
+            {filterCount > 0 && (
+              <Box sx={{ p: 1, bgcolor: "action.hover", borderRadius: 1 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 600, display: "block", mb: 0.8 }}
+                >
+                  Applied Filters
+                </Typography>
+                <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap" }}>
+                  {filters.statuses?.map((s) => (
+                    <Chip
+                      key={`status-${s}`}
+                      label={statusLabels[s]}
+                      size="small"
+                      onDelete={() => toggleStatus(s)}
+                      variant="filled"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  ))}
+                  {filters.types?.map((t) => (
+                    <Chip
+                      key={`type-${t}`}
+                      label={typeLabels[t]}
+                      size="small"
+                      onDelete={() => toggleType(t)}
+                      variant="filled"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  ))}
+                  {(filters.batteryMin !== undefined ||
+                    filters.batteryMax !== undefined) && (
+                    <Chip
+                      label={`Battery: ${filters.batteryMin || 0}%-${filters.batteryMax || 100}%`}
+                      size="small"
+                      onDelete={() =>
+                        handleFilterChange({
+                          ...filters,
+                          batteryMin: undefined,
+                          batteryMax: undefined,
+                        })
+                      }
+                      variant="filled"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  )}
+                  {filters.station && (
+                    <Chip
+                      label={`Station: ${filters.station}`}
+                      size="small"
+                      onDelete={() =>
+                        handleFilterChange({ ...filters, station: undefined })
+                      }
+                      variant="filled"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  )}
+                  {filters.maintenanceDue && (
+                    <Chip
+                      label="Maintenance Due"
+                      size="small"
+                      onDelete={() =>
+                        handleFilterChange({
+                          ...filters,
+                          maintenanceDue: undefined,
+                        })
+                      }
+                      variant="filled"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  )}
+                </Stack>
+              </Box>
+            )}
+
+            {filterCount > 0 && (
+              <Button
+                variant="outlined"
+                onClick={resetFilters}
+                fullWidth
+                size="small"
+                sx={{ fontSize: "0.75rem" }}
+              >
+                Clear All Filters
+              </Button>
+            )}
           </Stack>
-        </Collapse>
+        )}
       </CardContent>
     </Card>
   );
