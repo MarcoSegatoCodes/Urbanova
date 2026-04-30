@@ -1,9 +1,9 @@
 [
   {
     "id": "ST-001",
-    "name": "Central Station Hub",
-    "address": "Via Roma 1, Milano",
-    "coordinates": { "lat": 45.4642, "lng": 9.1900 },
+    "name": "Stazione Ferroviaria Hub",
+    "address": "Via Pola, Pordenone",
+    "coordinates": { "lat": 45.9542, "lng": 12.6610 },
     "type": "HYBRID",
     "status": "OPERATIONAL",
     "totalDocks": 20,
@@ -14,10 +14,24 @@
     "lastInspection": "2026-04-01"
   },
   {
+    "id": "ST-002",
+    "name": "Piazza XX Settembre District",
+    "address": "Piazza XX Settembre, Pordenone",
+    "coordinates": { "lat": 45.9565, "lng": 12.6585 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 15,
+    "availableDocks": 3,
+    "availableBikes": 10,
+    "availableEVehicles": 2,
+    "chargingPorts": 6,
+    "lastInspection": "2026-04-15"
+  },
+  {
     "id": "ST-003",
-    "name": "University Campus",
-    "address": "Piazza Leonardo da Vinci, Milano",
-    "coordinates": { "lat": 45.4781, "lng": 9.2275 },
+    "name": "Polo Universitario",
+    "address": "Via di Pordenone, Pordenone",
+    "coordinates": { "lat": 45.9622, "lng": 12.6545 },
     "type": "BIKE_ONLY",
     "status": "OPERATIONAL",
     "totalDocks": 30,
@@ -26,5 +40,33 @@
     "availableEVehicles": 0,
     "chargingPorts": 0,
     "lastInspection": "2026-03-28"
+  },
+  {
+    "id": "ST-004",
+    "name": "Parco Galvani",
+    "address": "Viale Dante, Pordenone",
+    "coordinates": { "lat": 45.9520, "lng": 12.6550 },
+    "type": "BIKE_ONLY",
+    "status": "MAINTENANCE",
+    "totalDocks": 12,
+    "availableDocks": 0,
+    "availableBikes": 0,
+    "availableEVehicles": 0,
+    "chargingPorts": 0,
+    "lastInspection": "2026-04-20"
+  },
+  {
+    "id": "ST-005",
+    "name": "Ospedale Civile",
+    "address": "Via Montereale, Pordenone",
+    "coordinates": { "lat": 45.9715, "lng": 12.6475 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 25,
+    "availableDocks": 12,
+    "availableBikes": 8,
+    "availableEVehicles": 5,
+    "chargingPorts": 10,
+    "lastInspection": "2026-04-18"
   }
 ]

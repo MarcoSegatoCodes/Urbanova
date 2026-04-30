@@ -1,121 +1,110 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
   Typography,
   Box,
   Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
+  IconButton,
   CssBaseline,
 } from "@mui/material";
-import {
-  Home,
-  DirectionsBus,
-  Map,
-  People,
-  Analytics,
-  Settings,
-  DirectionsCar,
-  Assignment,
-} from "@mui/icons-material";
-
+import { Menu as MenuIcon } from "@mui/icons-material";
+import Sidebar from "./Sidebar";
 import { routes } from "../router/routes";
 
-const drawerWidth = 240;
-
-const iconMap: Record<string, React.ComponentType> = {
-  Home: Home,
-  Stations: Map,
-  Trips: DirectionsBus,
-  Vehicles: DirectionsCar,
-  Users: People,
-  Tickets: Assignment,
-  Analytics: Analytics,
-  Settings: Settings,
-};
+const drawerWidth = 280;
 
 export default function Layout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const currentRoute = routes.find((r) => r.path === location.pathname);
   const pageTitle = currentRoute?.name || "Urbanova";
 
-  const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          Urbanova
-        </Typography>
-      </Toolbar>
-      <List>
-        {routes.map((route) => {
-          const Icon = iconMap[route.name];
-          return (
-            <ListItem key={route.path} disablePadding>
-              <ListItemButton
-                selected={location.pathname === route.path}
-                onClick={() => navigate(route.path)}
-              >
-                {Icon && (
-                  <ListItemIcon>
-                    <Icon />
-                  </ListItemIcon>
-                )}
-                <ListItemText primary={route.name} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
-    </div>
-  );
-
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fafc" }}>
       <CssBaseline />
+
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          ml: { md: `${drawerWidth}px` },
+          bgcolor: "rgba(248, 250, 252, 0.8)",
+          backdropFilter: "blur(8px)",
+          borderBottom: "1px solid #e2e8f0",
+          color: "#0f172a",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700 }}>
             {pageTitle}
           </Typography>
         </Toolbar>
       </AppBar>
+
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
       >
         <Drawer
-          variant="permanent"
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
+              borderRight: "1px solid #e2e8f0",
+            },
+          }}
+        >
+          <Sidebar onClose={handleDrawerToggle} />
+        </Drawer>
+
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", md: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              borderRight: "1px solid #e2e8f0",
+              bgcolor: "#fff",
             },
           }}
           open
         >
-          {drawer}
+          <Sidebar />
         </Drawer>
       </Box>
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: "64px",
+          p: { xs: 2, sm: 3 },
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          mt: "64px", 
+          minHeight: "100vh",
         }}
       >
         <Outlet />
