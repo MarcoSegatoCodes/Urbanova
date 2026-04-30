@@ -8,7 +8,8 @@ import {
   Settings as SettingsIcon,
   Analytics as AnalyticsIcon,
   People as PeopleIcon,
-  EvStation as StationIcon
+  EvStation as StationIcon,
+  ConfirmationNumber as TicketIcon
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -19,6 +20,7 @@ const menuItems = [
   { text: "Trips", icon: BikeIcon, path: "/trips" },
   { text: "Vehicles", icon: BikeIcon, path: "/vehicles" },
   { text: "Users", icon: PeopleIcon, path: "/users" },
+  { text: "Tickets", icon: TicketIcon, path: "/tickets" }, // Aggiunto qui
   { text: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
   { text: "Settings", icon: SettingsIcon, path: "/settings" },
 ];
