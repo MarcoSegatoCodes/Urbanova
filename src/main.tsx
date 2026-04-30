@@ -6,6 +6,8 @@ import { router } from "./router";
 
 initializeServices();
 
+initializeServices();
+
 createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />,
 );
