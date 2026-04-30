@@ -34,20 +34,6 @@ export const getAvailableVehicles = (): Vehicle[] => {
   return vehicles.filter((v) => v.status === "AVAILABLE");
 };
 
-export const getActiveVehicles = (): Vehicle[] => {
-  return vehicles.filter((v) => v.status !== "OUT_OF_SERVICE");
-};
-
-export const getVehicleTypeDistribution = (): Record<string, number> => {
-  return vehicles.reduce(
-    (acc, vehicle) => {
-      acc[vehicle.type] = (acc[vehicle.type] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-};
-
 // --- WRITE Operations ---
 export const addVehicle = (vehicle: Vehicle): Vehicle => {
   vehicles = [...vehicles, vehicle];
@@ -102,8 +88,8 @@ export const searchVehicles = (query: string): Vehicle[] => {
   return vehicles.filter(
     (v) =>
       v.id.toLowerCase().includes(lowerQuery) ||
-      v.name.toLowerCase().includes(lowerQuery) ||
-      v.type.toLowerCase().includes(lowerQuery),
+      v.type.toLowerCase().includes(lowerQuery) ||
+      v.name.toLowerCase().includes(lowerQuery),
   );
 };
 

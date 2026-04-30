@@ -21,7 +21,9 @@ import {
   Analytics,
   Settings,
   DirectionsCar,
+  Assignment,
 } from "@mui/icons-material";
+
 import { routes } from "../router/routes";
 
 const drawerWidth = 240;
@@ -32,6 +34,7 @@ const iconMap: Record<string, ComponentType> = {
   Trips: DirectionsBus,
   Vehicles: DirectionsCar,
   Users: People,
+  Tickets: Assignment,
   Analytics: Analytics,
   Settings: Settings,
 };

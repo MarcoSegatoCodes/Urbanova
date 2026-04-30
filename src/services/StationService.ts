@@ -30,6 +30,12 @@ export const getOperationalStations = (): Station[] => {
   return stations.filter((s) => s.status === "OPERATIONAL");
 };
 
+export const getConnectedStations = (stationId: string): Station[] => {
+  const station = getStationById(stationId);
+  if (!station?.connectedStationIds) return [];
+  return stations.filter((s) => station.connectedStationIds!.includes(s.id));
+};
+
 // --- WRITE Operations ---
 export const addStation = (station: Station): Station => {
   stations = [...stations, station];

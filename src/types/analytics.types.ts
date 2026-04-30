@@ -11,6 +11,7 @@ export interface AnalyticsSummary {
 }
 
 export interface TripsByDay {
+  [key: string]: any;
   day: string;
   trips: number;
 }
@@ -21,8 +22,21 @@ export interface TripsByVehicleType {
 }
 
 export interface CO2ByMonth {
+  [key: string]: any;
   month: string;
   co2: number;
+}
+
+export interface UsageByStation {
+  [key: string]: any;
+  station: string;
+  usage: number;
+}
+
+export interface BatteryConsumptionOverTime {
+  [key: string]: any;
+  time: string;
+  consumption: number;
 }
 
 export interface Analytics {
@@ -30,4 +44,6 @@ export interface Analytics {
   tripsByDayOfWeek: TripsByDay[];
   tripsByVehicleType: TripsByVehicleType[];
   co2SavedByMonth: CO2ByMonth[];
+  usageByStation: UsageByStation[];
+  batteryConsumptionOverTime: BatteryConsumptionOverTime[];
 }

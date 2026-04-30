@@ -4,6 +4,9 @@ const STORAGE_KEY = "users";
 
 let users: User[] = [];
 
+const getDerivedStatus = (user: User): UserStatus =>
+  user.isActive ? "ACTIVE" : "INACTIVE";
+
 // --- INIT ---
 export const initUsers = (data: User[]): void => {
   users = [...data];
@@ -26,8 +29,23 @@ export const getUsersByRole = (role: UserRole): User[] => {
   return users.filter((u) => u.role === role);
 };
 
+export const getUsersByStatus = (status: UserStatus): User[] => {
+  return users.filter((u) => getDerivedStatus(u) === status);
+};
+
 export const getActiveUsers = (): User[] => {
   return users.filter((u) => u.isActive);
+};
+
+export const getUsersWithValidPass = (): User[] => {
+  const now = new Date().toISOString();
+  return users.filter(
+    (u) =>
+      u.passType &&
+      u.passType.toUpperCase() !== "NONE" &&
+      u.passExpiryDate &&
+      u.passExpiryDate > now,
+  );
 };
 
 // --- WRITE Operations ---
@@ -44,6 +62,35 @@ export const updateUser = (
   if (index === -1) return undefined;
   users[index] = { ...users[index], ...updates };
   return users[index];
+};
+
+export const updateUserStatus = (
+  id: string,
+  status: UserStatus,
+): User | undefined => {
+  return updateUser(id, { isActive: status === "ACTIVE" });
+};
+
+export const updateUserPass = (
+  id: string,
+  passType: PassType,
+  expiryDate: string,
+): User | undefined => {
+  return updateUser(id, { passType, passExpiryDate: expiryDate });
+};
+
+export const updateUserBalance = (
+  id: string,
+  amount: number,
+): User | undefined => {
+  const user = getUserById(id);
+  if (!user) return undefined;
+  const newBalance = (user.balance || 0) + amount;
+  return updateUser(id, { balance: newBalance });
+};
+
+export const recordLogin = (id: string): User | undefined => {
+  return updateUser(id, { lastLoginAt: new Date().toISOString() });
 };
 
 export const deleteUser = (id: string): boolean => {
@@ -79,6 +126,7 @@ export const searchUsers = (query: string): User[] => {
 export const authenticateUser = (email: string): User | undefined => {
   const user = getUserByEmail(email);
   if (user && user.isActive) {
+    recordLogin(user.id);
     return user;
   }
   return undefined;
