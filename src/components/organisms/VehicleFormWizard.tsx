@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -84,6 +84,29 @@ const statusLabels: Record<VehicleStatus, string> = {
   OUT_OF_SERVICE: "Out of Service",
 };
 
+const getInitialFormState = (vehicle?: Vehicle): FormState =>
+  vehicle
+    ? {
+        name: vehicle.name,
+        type: vehicle.type,
+        status: vehicle.status,
+        currentStationId: vehicle.currentStationId,
+        batteryLevel: vehicle.batteryLevel,
+        lastMaintenanceDate: vehicle.lastMaintenanceDate,
+        nextMaintenanceDue: vehicle.nextMaintenanceDue,
+        notes: vehicle.notes || "",
+      }
+    : {
+        name: "",
+        type: "BIKE",
+        status: "AVAILABLE",
+        currentStationId: "",
+        batteryLevel: 100,
+        lastMaintenanceDate: new Date().toISOString().split("T")[0],
+        nextMaintenanceDue: new Date().toISOString().split("T")[0],
+        notes: "",
+      };
+
 export default function VehicleFormWizard({
   open,
   vehicle,
@@ -95,27 +118,7 @@ export default function VehicleFormWizard({
 }: VehicleFormWizardProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<FormState>(() =>
-    vehicle
-      ? {
-          name: vehicle.name,
-          type: vehicle.type,
-          status: vehicle.status,
-          currentStationId: vehicle.currentStationId,
-          batteryLevel: vehicle.batteryLevel,
-          lastMaintenanceDate: vehicle.lastMaintenanceDate,
-          nextMaintenanceDue: vehicle.nextMaintenanceDue,
-          notes: vehicle.notes || "",
-        }
-      : {
-          name: "",
-          type: "BIKE",
-          status: "AVAILABLE",
-          currentStationId: "",
-          batteryLevel: 100,
-          lastMaintenanceDate: new Date().toISOString().split("T")[0],
-          nextMaintenanceDue: new Date().toISOString().split("T")[0],
-          notes: "",
-        },
+    getInitialFormState(vehicle),
   );
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -126,31 +129,16 @@ export default function VehicleFormWizard({
     [stations, formState.currentStationId],
   );
 
+  useEffect(() => {
+    if (!open) return;
+    setActiveStep(0);
+    setFormState(getInitialFormState(vehicle));
+    setErrorMessage("");
+  }, [open, vehicle]);
+
   const resetWizard = () => {
     setActiveStep(0);
-    setFormState(
-      vehicle
-        ? {
-            name: vehicle.name,
-            type: vehicle.type,
-            status: vehicle.status,
-            currentStationId: vehicle.currentStationId,
-            batteryLevel: vehicle.batteryLevel,
-            lastMaintenanceDate: vehicle.lastMaintenanceDate,
-            nextMaintenanceDue: vehicle.nextMaintenanceDue,
-            notes: vehicle.notes || "",
-          }
-        : {
-            name: "",
-            type: "BIKE",
-            status: "AVAILABLE",
-            currentStationId: "",
-            batteryLevel: 100,
-            lastMaintenanceDate: new Date().toISOString().split("T")[0],
-            nextMaintenanceDue: new Date().toISOString().split("T")[0],
-            notes: "",
-          },
-    );
+    setFormState(getInitialFormState(vehicle));
     setErrorMessage("");
   };
 
@@ -223,7 +211,7 @@ export default function VehicleFormWizard({
   const renderStep = () => {
     if (activeStep === 0) {
       return (
-        <Stack spacing={2} sx={{ mt: 2 }}>
+        <Stack spacing={1.5} sx={{ mt: 1.5 }}>
           <TextField
             label="Vehicle Name"
             value={formState.name}
@@ -253,7 +241,7 @@ export default function VehicleFormWizard({
 
     if (activeStep === 1) {
       return (
-        <Stack spacing={2} sx={{ mt: 2 }}>
+        <Stack spacing={1.5} sx={{ mt: 1.5 }}>
           <TextField
             select
             label="Station"
@@ -292,7 +280,7 @@ export default function VehicleFormWizard({
 
     if (activeStep === 2) {
       return (
-        <Stack spacing={2} sx={{ mt: 2 }}>
+        <Stack spacing={1.5} sx={{ mt: 1.5 }}>
           <TextField
             label="Battery Level (%)"
             type="number"
@@ -343,7 +331,7 @@ export default function VehicleFormWizard({
 
     if (activeStep === 3) {
       return (
-        <Stack spacing={2} sx={{ mt: 2 }}>
+        <Stack spacing={1.5} sx={{ mt: 1.5 }}>
           <Box
             sx={{
               p: 2,
@@ -353,7 +341,7 @@ export default function VehicleFormWizard({
               borderColor: "divider",
             }}
           >
-            <Stack spacing={2}>
+            <Stack spacing={1.5}>
               <Box>
                 <Typography variant="caption" color="text.secondary">
                   Name
@@ -435,8 +423,8 @@ export default function VehicleFormWizard({
         {vehicle ? "Edit Vehicle" : "Add New Vehicle"}
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 2 }}>
-        <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+      <DialogContent sx={{ pt: 1.5, pb: 2 }}>
+        <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -445,7 +433,7 @@ export default function VehicleFormWizard({
         </Stepper>
 
         {errorMessage && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 1.5 }}>
             {errorMessage}
           </Alert>
         )}
@@ -453,7 +441,7 @@ export default function VehicleFormWizard({
         {renderStep()}
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, pt: 0 }}>
+      <DialogActions sx={{ p: 1.5, pt: 0.5 }}>
         <Button onClick={onClose}>Cancel</Button>
         {activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
         {activeStep < steps.length - 1 ? (

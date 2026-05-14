@@ -80,7 +80,7 @@ const countActiveFilters = (filters: FilterState): number => {
 
 export default function VehicleFilterPanel({ onFilterChange }: Props) {
   const [filters, setFilters] = useState<FilterState>({});
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [stations, setStations] = useState<any[]>([]);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -180,139 +180,154 @@ export default function VehicleFilterPanel({ onFilterChange }: Props) {
 
         {showFilters && (
           <Stack spacing={1.5}>
-            {/* Status Filter */}
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: "text.secondary",
-                  display: "block",
-                  mb: 0.8,
-                }}
-              >
-                Status
-              </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {vehicleStatuses.map((status) => (
-                  <Chip
-                    key={status}
-                    label={statusLabels[status]}
-                    onClick={() => toggleStatus(status)}
-                    variant={
-                      filters.statuses?.includes(status) ? "filled" : "outlined"
-                    }
-                    color={
-                      filters.statuses?.includes(status) ? "primary" : "default"
-                    }
-                    size="small"
-                    sx={{ fontSize: "0.75rem" }}
-                  />
-                ))}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  md: "repeat(2, minmax(0, 1fr))",
+                },
+                gap: 2,
+              }}
+            >
+              {/* Status Filter */}
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 0.8,
+                  }}
+                >
+                  Status
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {vehicleStatuses.map((status) => (
+                    <Chip
+                      key={status}
+                      label={statusLabels[status]}
+                      onClick={() => toggleStatus(status)}
+                      variant={
+                        filters.statuses?.includes(status)
+                          ? "filled"
+                          : "outlined"
+                      }
+                      color={
+                        filters.statuses?.includes(status)
+                          ? "primary"
+                          : "default"
+                      }
+                      size="small"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  ))}
+                </Box>
               </Box>
-            </Box>
 
-            {/* Type Filter */}
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: "text.secondary",
-                  display: "block",
-                  mb: 0.8,
-                }}
-              >
-                Vehicle Type
-              </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {vehicleTypes.map((type) => (
-                  <Chip
-                    key={type}
-                    label={typeLabels[type]}
-                    onClick={() => toggleType(type)}
-                    variant={
-                      filters.types?.includes(type) ? "filled" : "outlined"
-                    }
-                    color={
-                      filters.types?.includes(type) ? "primary" : "default"
-                    }
-                    size="small"
-                    sx={{ fontSize: "0.75rem" }}
-                  />
-                ))}
+              {/* Type Filter */}
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 0.8,
+                  }}
+                >
+                  Vehicle Type
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {vehicleTypes.map((type) => (
+                    <Chip
+                      key={type}
+                      label={typeLabels[type]}
+                      onClick={() => toggleType(type)}
+                      variant={
+                        filters.types?.includes(type) ? "filled" : "outlined"
+                      }
+                      color={
+                        filters.types?.includes(type) ? "primary" : "default"
+                      }
+                      size="small"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  ))}
+                </Box>
               </Box>
-            </Box>
 
-            {/* Battery Slider */}
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: "text.secondary",
-                  display: "block",
-                  mb: 1,
-                }}
-              >
-                Battery Level ({filters.batteryMin || 0}% -{" "}
-                {filters.batteryMax || 100}%)
-              </Typography>
-              <Slider
-                min={0}
-                max={100}
-                value={[filters.batteryMin || 0, filters.batteryMax || 100]}
-                onChange={(_, value: number | number[]) => {
-                  if (Array.isArray(value)) {
+              {/* Battery Slider */}
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 1,
+                  }}
+                >
+                  Battery Level ({filters.batteryMin || 0}% -{" "}
+                  {filters.batteryMax || 100}%)
+                </Typography>
+                <Slider
+                  min={0}
+                  max={100}
+                  value={[filters.batteryMin || 0, filters.batteryMax || 100]}
+                  onChange={(_, value: number | number[]) => {
+                    if (Array.isArray(value)) {
+                      handleFilterChange({
+                        ...filters,
+                        batteryMin: value[0],
+                        batteryMax: value[1],
+                      });
+                    }
+                  }}
+                  marks={[
+                    { value: 0, label: "0%" },
+                    { value: 50, label: "50%" },
+                    { value: 100, label: "100%" },
+                  ]}
+                  sx={{ mt: 1.5, mb: 0.5 }}
+                />
+              </Box>
+
+              {/* Station Filter */}
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 600,
+                    color: "text.secondary",
+                    display: "block",
+                    mb: 0.8,
+                  }}
+                >
+                  Current Station
+                </Typography>
+                <Select
+                  fullWidth
+                  size="small"
+                  value={filters.station || ""}
+                  onChange={(e) =>
                     handleFilterChange({
                       ...filters,
-                      batteryMin: value[0],
-                      batteryMax: value[1],
-                    });
+                      station: e.target.value || undefined,
+                    })
                   }
-                }}
-                marks={[
-                  { value: 0, label: "0%" },
-                  { value: 50, label: "50%" },
-                  { value: 100, label: "100%" },
-                ]}
-                sx={{ mt: 2, mb: 1 }}
-              />
-            </Box>
-
-            {/* Station Filter */}
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{
-                  fontWeight: 600,
-                  color: "text.secondary",
-                  display: "block",
-                  mb: 0.8,
-                }}
-              >
-                Current Station
-              </Typography>
-              <Select
-                fullWidth
-                size="small"
-                value={filters.station || ""}
-                onChange={(e) =>
-                  handleFilterChange({
-                    ...filters,
-                    station: e.target.value || undefined,
-                  })
-                }
-                displayEmpty
-                sx={{ fontSize: "0.875rem" }}
-              >
-                <MenuItem value="">All Stations</MenuItem>
-                {stations.map((station) => (
-                  <MenuItem key={station.id} value={station.id}>
-                    {station.id} - {station.name}
-                  </MenuItem>
-                ))}
-              </Select>
+                  displayEmpty
+                  sx={{ fontSize: "0.875rem" }}
+                >
+                  <MenuItem value="">All Stations</MenuItem>
+                  {stations.map((station) => (
+                    <MenuItem key={station.id} value={station.id}>
+                      {station.id} - {station.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
             </Box>
 
             {/* Maintenance Filter */}

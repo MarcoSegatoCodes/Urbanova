@@ -52,16 +52,16 @@ export default function VehicleDetailModal({
 
       <DialogContent sx={{ pt: 2 }}>
         <Stack spacing={3}>
-          {/* Status & Type Section */}
+          {/* Status, Type & Battery Section */}
           <Box>
             <Typography
               variant="subtitle2"
               sx={{ fontWeight: 600, mb: 1.5, color: "text.secondary" }}
             >
-              Status & Type
+              Status, Type & Battery
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Box>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography
                   variant="caption"
                   sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
@@ -69,33 +69,26 @@ export default function VehicleDetailModal({
                   Status
                 </Typography>
                 <VehicleStatusBadge status={vehicle.status} />
-              </Box>
-              <Box>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography
                   variant="caption"
                   sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
                 >
-                  Type
+                  Vehicle Type
                 </Typography>
                 <VehicleTypeBadge type={vehicle.type} />
-              </Box>
-            </Stack>
-          </Box>
-
-          <Divider />
-
-          {/* Battery Section */}
-          <Box>
-            <Typography
-              variant="subtitle2"
-              sx={{ fontWeight: 600, mb: 1.5, color: "text.secondary" }}
-            >
-              Battery Level
-            </Typography>
-            <BatteryBar level={vehicle.batteryLevel} size="medium" />
-            <Typography variant="body2" sx={{ mt: 1, color: "text.secondary" }}>
-              {vehicle.batteryLevel}%
-            </Typography>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
+                >
+                  Battery Level
+                </Typography>
+                <BatteryBar level={vehicle.batteryLevel} size="small" />
+              </Grid>
+            </Grid>
           </Box>
 
           <Divider />
@@ -109,7 +102,7 @@ export default function VehicleDetailModal({
               Location & Station
             </Typography>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -125,7 +118,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid size={{ xs: 6 }}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
@@ -141,7 +134,7 @@ export default function VehicleDetailModal({
                   </Typography>
                 </Paper>
               </Grid>
-              <Grid size={{ xs: 12 }}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper
                   elevation={0}
                   sx={{ p: 1.5, backgroundColor: "#f5f5f5", borderRadius: 1 }}
