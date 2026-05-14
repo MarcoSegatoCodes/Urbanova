@@ -48,7 +48,7 @@ export default function TicketFiltersBar({
   onSortDirectionChange,
   onReset,
 }: TicketFiltersBarProps) {
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   const setFilter = <K extends keyof TicketListFilters>(
     key: K,
