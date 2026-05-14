@@ -6,7 +6,7 @@ let trips: Trip[] = [];
 
 // --- INIT ---
 export const initTrips = (data: Trip[]): void => {
-  trips = [...data];
+  trips = data.map((trip) => ({ ...trip }));
 };
 
 // --- READ Operations ---

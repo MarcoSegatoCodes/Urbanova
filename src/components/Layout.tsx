@@ -1,4 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import type { ComponentType } from "react";
 import {
   AppBar,
   Toolbar,
@@ -27,7 +28,7 @@ import { routes } from "../router/routes";
 
 const drawerWidth = 240;
 
-const iconMap: Record<string, React.ComponentType> = {
+const iconMap: Record<string, ComponentType> = {
   Home: Home,
   Stations: Map,
   Trips: DirectionsBus,
