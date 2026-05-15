@@ -9,6 +9,14 @@
 - **Green Analytics:** Interactive data visualization highlighting real-time $CO_2$ savings and fleet utilization trends.
 - **Smart Filtering:** Advanced search and filter engine for vehicle status, category, and battery health.
 
+## Setup Environment Variables
+
+To run the map correctly, you need a Mapbox Access Token:
+
+1. Create a `.env` file in the root directory.
+2. Add your token like this:
+   `VITE_MAPBOX_TOKEN=pk.eyJ1Ijoia2F3ZWFzd2VsbCIsImEiOiJjbW9jbW53OWYwMmVxMzFxb3Y0YTQ4eDh2In0.nKAYZb-IEYEOLvfHTuntdw`
+
 ## Tech Stack
 
 ### Frontend
