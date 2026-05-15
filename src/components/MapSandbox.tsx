@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 import { mockData } from '../data';
 import type { Vehicle, Station } from '../data'; 
@@ -14,7 +15,6 @@ import {
   BatteryChargingFull as BatteryFullIcon,
   DirectionsBike as BikeIcon,
   DirectionsCar as CarIcon,
-  EvStation as PlugIcon,
   AccessTime as TimeIcon,
   Streetview as StreetIcon
 } from '@mui/icons-material';
@@ -22,30 +22,11 @@ import {
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAPBOX_STYLE = 'mapbox/dark-v11';
 
-const ResizeMap = ({ isFullMap }: { isFullMap: boolean }) => {
+const ResizeMap = () => {
   const map = useMap();
-
   useEffect(() => {
-    const fixMap = () => {
-      map.invalidateSize();
-    };
-    const mapDiv = map.getContainer();
-    const observer = new ResizeObserver(() => {
-      fixMap();
-    });
-    observer.observe(mapDiv);
-    const timers = [100, 300, 600, 1000, 2000].map(ms => 
-      setTimeout(fixMap, ms)
-    );
-    window.addEventListener('resize', fixMap);
-
-    return () => {
-      observer.disconnect();
-      timers.forEach(clearTimeout);
-      window.removeEventListener('resize', fixMap);
-    };
-  }, [map, isFullMap]);
-
+    setTimeout(() => map.invalidateSize(), 300);
+  }, [map]);
   return null;
 };
 
@@ -66,24 +47,33 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
-const createCustomIcon = (color: string, isStation: boolean, isUser: boolean = false) => {
-  const size = isUser ? 24 : isStation ? 22 : 14;
+const createVehicleIcon = (type: string, status: string) => {
+  const isMaintenance = status === 'MAINTENANCE';
+  const color = isMaintenance ? '#f44336' : '#4caf50';
+  
+  const iconMarkup = renderToStaticMarkup(
+    type === 'BIKE' ? <BikeIcon style={{color: 'white', fontSize: '16px'}} /> : <CarIcon style={{color: 'white', fontSize: '16px'}} />
+  );
+
   return L.divIcon({
-    html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: ${isStation ? '4px' : '50%'}; border: 2px solid white; box-shadow: 0 0 15px ${color}; display: flex; align-items: center; justify-content: center;">
-            ${isUser ? '<div style="width: 8px; height: 8px; background: white; border-radius: 50%;"></div>' : ''}
-            ${isStation ? '<span style="color:white; font-size:10px; font-weight:bold;">S</span>' : ''}
+    html: `<div style="background-color: ${color}; width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+            <div style="transform: rotate(45deg); display: flex;">${iconMarkup}</div>
           </div><style>${popupCustomStyle}</style>`,
-    className: 'custom-icon',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2]
+    className: 'custom-vehicle-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32]
   });
 };
 
-interface MapSandboxProps {
-  isFullMap?: boolean;
-}
+const createStationIcon = () => {
+  return L.divIcon({
+    html: `<div style="background-color: #9c27b0; width: 22px; height: 22px; border-radius: 4px; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">P</div>`,
+    className: 'station-icon',
+    iconSize: [22, 22]
+  });
+};
 
-const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
+export default function MapSandbox() {
   const [vehicles] = useState<Vehicle[]>(mockData.vehicles);
   const [stations] = useState<Station[]>(mockData.stations);
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
@@ -93,7 +83,8 @@ const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => setUserPos([pos.coords.latitude, pos.coords.longitude]),
-      null, { enableHighAccuracy: true }
+      () => setUserPos([45.9625, 12.6550]),
+      { enableHighAccuracy: true }
     );
   }, []);
 
@@ -102,19 +93,18 @@ const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
   };
 
   const filteredVehicles = vehicles.filter(v => {
-    const matchesType = typeFilter === 'ALL' || v.type.includes(typeFilter);
+    const matchesType = typeFilter === 'ALL' || v.type === typeFilter;
     const matchesBattery = !batteryFilter || (v.batteryLevel !== undefined && v.batteryLevel >= 80);
     return matchesType && matchesBattery;
   });
 
   const chipStyle = (active: boolean, color: string = '#2196f3') => ({
-    bgcolor: active ? color : 'rgba(255,255,255,0.08)',
+    bgcolor: active ? color : 'rgba(20, 20, 20, 0.8)',
     color: 'white',
     fontWeight: 'bold',
+    backdropFilter: 'blur(4px)',
     border: '1px solid rgba(255,255,255,0.1)',
-    transition: 'all 0.2s ease',
-    cursor: 'pointer',
-    '&:hover': { bgcolor: active ? color : 'rgba(255,255,255,0.2)' }
+    '&:hover': { bgcolor: active ? color : 'rgba(40, 40, 40, 0.9)' }
   });
 
   return (
@@ -122,76 +112,102 @@ const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
       position: 'relative', 
       height: '100%', 
       width: '100%', 
-      bgcolor: '#000', 
-      overflow: 'hidden',
-      display: 'block' 
+      bgcolor: '#0f172a',
+      overflow: 'hidden'
     }}>
 
-      {/* OVERLAY UI */}
+      {/* HEADER UI */}
       <Paper elevation={0} sx={{ 
-        position: 'absolute', top: 20, left: 20, right: 20, zIndex: 1100,
-        p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-        borderRadius: 4, bgcolor: 'rgba(20, 20, 20, 0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.1)'
+        position: 'absolute', top: 16, left: 16, right: 16, zIndex: 1100,
+        p: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+        borderRadius: 3, bgcolor: 'rgba(20, 20, 20, 0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          <NavIcon sx={{ color: '#2196f3', fontSize: 30 }} />
-          <Typography variant="h6" sx={{ fontWeight: 900, color: 'white', letterSpacing: 1 }}>URBANOVA</Typography>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+          <NavIcon sx={{ color: '#2196f3' }} />
+          <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'white', letterSpacing: 0.5 }}>URBANOVA LIVE</Typography>
         </Stack>
-        <Chip label="SYSTEM ACTIVE" size="small" variant="outlined" sx={{ color: '#4caf50', borderColor: '#4caf50', fontWeight: 'bold' }} />
+        <Chip 
+          label={userPos ? "GPS ACTIVE" : "DEFAULT VIEW"} 
+          size="small" 
+          sx={{ color: userPos ? '#4caf50' : '#ff9800', borderColor: userPos ? '#4caf50' : '#ff9800', fontWeight: 'bold' }} 
+          variant="outlined" 
+        />
       </Paper>
 
-      <Stack spacing={1.5} sx={{ position: 'absolute', top: 110, left: 20, zIndex: 1100 }}>
+      <Stack spacing={1} sx={{ position: 'absolute', top: 85, left: 16, zIndex: 1100 }}>
         <Stack direction="row" spacing={1}>
           {(['ALL', 'BIKE', 'CAR'] as const).map((t) => (
             <Chip key={t} label={t} onClick={() => setTypeFilter(t)} sx={chipStyle(typeFilter === t)} />
           ))}
         </Stack>
         <Chip 
-          icon={<BatteryFullIcon sx={{ color: 'white !important' }} />} 
+          icon={<BatteryFullIcon sx={{ color: 'white !important', fontSize: '18px' }} />} 
           label="Charge > 80%" 
           onClick={() => setBatteryFilter(!batteryFilter)} 
           sx={chipStyle(batteryFilter, '#4caf50')} 
         />
       </Stack>
 
-      {/* MAP ENGINE */}
       <MapContainer 
         center={[45.9625, 12.6550]} 
         zoom={14} 
         zoomControl={false} 
-        style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, height: '100%', width: '100%' }}
       >
-        <ResizeMap isFullMap={isFullMap} />
+        <ResizeMap />
         <TileLayer url={`https://api.mapbox.com/styles/v1/${MAPBOX_STYLE}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`} />
         <ZoomControl position="bottomright" />
 
-        {userPos && (
-          <Marker position={userPos} icon={createCustomIcon('#2196f3', false, true)}>
-            <Popup><Typography sx={{ p: 1, fontWeight: 'bold', color: 'white' }}>You are here</Typography></Popup>
-          </Marker>
-        )}
-
         {filteredVehicles.map((v) => {
           const dist = userPos ? calculateDistance(userPos[0], userPos[1], v.coordinates.lat, v.coordinates.lng) : null;
-          const time = dist ? Math.round((dist / 5) * 60) : 5;
+          const time = dist ? Math.round((dist / 12) * 60) : 5;
 
           return (
-            <Marker key={v.id} position={[v.coordinates.lat, v.coordinates.lng]} icon={createCustomIcon(v.status === 'MAINTENANCE' ? '#f44336' : '#4caf50', false)}>
+            <Marker 
+              key={v.id} 
+              position={[v.coordinates.lat, v.coordinates.lng]} 
+              icon={createVehicleIcon(v.type, v.status)}
+            >
               <Popup>
-                <Box sx={{ p: 2.5 }}>
-                  <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Box sx={{ p: 2 }}>
+                  <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1, alignItems: 'center' }}>
                     <Typography sx={{ fontWeight: 800, color: 'white' }}>{v.name}</Typography>
-                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>{v.id}</Typography>
+                    <Chip label={v.type} size="small" sx={{ height: 18, fontSize: '10px', bgcolor: 'rgba(255,255,255,0.1)', color: 'white' }} />
                   </Stack>
+                  
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
-                    <TimeIcon sx={{ fontSize: 16, color: '#4caf50' }} />
-                    <Typography variant="caption" sx={{ color: 'white' }}>{time} min ({dist?.toFixed(1) || '0.5'} km)</Typography>
+                    <TimeIcon sx={{ fontSize: 14, color: '#4caf50' }} />
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      {dist ? `${dist.toFixed(1)} km • ~${time} min` : 'Calculating...'}
+                    </Typography>
                   </Stack>
-                  <Box sx={{ mb: 2.5 }}>
-                    <LinearProgress variant="determinate" value={v.batteryLevel} sx={{ height: 6, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.1)', '& .MuiLinearProgress-bar': { bgcolor: v.batteryLevel < 20 ? '#f44336' : '#4caf50' } }} />
+
+                  <Box sx={{ mb: 2 }}>
+                    <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 0.5 }}>
+                       <Typography variant="caption" sx={{ color: 'white' }}>Battery</Typography>
+                       <Typography variant="caption" sx={{ color: 'white', fontWeight: 'bold' }}>{v.batteryLevel}%</Typography>
+                    </Stack>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={v.batteryLevel} 
+                      sx={{ 
+                        height: 6, 
+                        borderRadius: 3, 
+                        bgcolor: 'rgba(255,255,255,0.1)', 
+                        '& .MuiLinearProgress-bar': { bgcolor: v.batteryLevel! < 20 ? '#f44336' : '#4caf50' } 
+                      }} 
+                    />
                   </Box>
-                  <Button fullWidth variant="contained" startIcon={<StreetIcon />} onClick={() => openStreetView(v.coordinates.lat, v.coordinates.lng)} sx={{ bgcolor: '#2196f3', fontWeight: 'bold', textTransform: 'none', borderRadius: 2 }}>
-                    Street View
+
+                  <Button 
+                    fullWidth 
+                    variant="contained" 
+                    size="small"
+                    startIcon={<StreetIcon />} 
+                    onClick={() => openStreetView(v.coordinates.lat, v.coordinates.lng)}
+                    sx={{ bgcolor: '#2196f3', '&:hover': { bgcolor: '#1976d2' } }}
+                  >
+                    View Surroundings
                   </Button>
                 </Box>
               </Popup>
@@ -200,22 +216,26 @@ const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
         })}
 
         {stations.map((s) => (
-          <Marker key={s.id} position={[s.coordinates.lat, s.coordinates.lng]} icon={createCustomIcon('#9c27b0', true)}>
+          <Marker key={s.id} position={[s.coordinates.lat, s.coordinates.lng]} icon={createStationIcon()}>
             <Popup>
-              <Box sx={{ p: 2.5 }}>
-                <Typography sx={{ fontWeight: 800, color: 'white', mb: 2 }}>{s.name}</Typography>
-                <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                  <Box sx={{ flex: 1, bgcolor: 'rgba(255,255,255,0.05)', p: 1, borderRadius: 2, textAlign: 'center' }}>
-                    <BikeIcon sx={{ fontSize: 18, color: '#2196f3' }} /><Typography variant="body2" sx={{ color: 'white' }}>{s.availableBikes}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, bgcolor: 'rgba(255,255,255,0.05)', p: 1, borderRadius: 2, textAlign: 'center' }}>
-                    <CarIcon sx={{ fontSize: 18, color: '#4caf50' }} /><Typography variant="body2" sx={{ color: 'white' }}>{s.availableEVehicles}</Typography>
-                  </Box>
-                  <Box sx={{ flex: 1, bgcolor: 'rgba(255,255,255,0.05)', p: 1, borderRadius: 2, textAlign: 'center' }}>
-                    <PlugIcon sx={{ fontSize: 18, color: '#ff9800' }} /><Typography variant="body2" sx={{ color: 'white' }}>{s.chargingPorts}</Typography>
-                  </Box>
+              <Box sx={{ p: 2 }}>
+                <Typography sx={{ fontWeight: 800, color: 'white', mb: 1.5 }}>{s.name}</Typography>
+                <Stack spacing={1}>
+                  <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                      <BikeIcon sx={{ fontSize: 16, color: '#2196f3' }} />
+                      <Typography variant="body2" sx={{ color: 'white' }}>Bikes</Typography>
+                    </Stack>
+                    <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>{s.availableBikes}</Typography>
+                  </Stack>
+                  <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                      <CarIcon sx={{ fontSize: 16, color: '#4caf50' }} />
+                      <Typography variant="body2" sx={{ color: 'white' }}>Cars</Typography>
+                    </Stack>
+                    <Typography variant="body2" sx={{ color: 'white', fontWeight: 'bold' }}>{s.availableEVehicles}</Typography>
+                  </Stack>
                 </Stack>
-                <Button fullWidth variant="outlined" startIcon={<StreetIcon />} onClick={() => openStreetView(s.coordinates.lat, s.coordinates.lng)} sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)', textTransform: 'none' }}>Street View</Button>
               </Box>
             </Popup>
           </Marker>
@@ -223,6 +243,4 @@ const MapSandbox = ({ isFullMap = false }: MapSandboxProps) => {
       </MapContainer>
     </Box>
   );
-};
-
-export default MapSandbox;
+}

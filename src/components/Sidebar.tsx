@@ -20,7 +20,7 @@ const menuItems = [
   { text: "Trips", icon: BikeIcon, path: "/trips" },
   { text: "Vehicles", icon: BikeIcon, path: "/vehicles" },
   { text: "Users", icon: PeopleIcon, path: "/users" },
-  { text: "Tickets", icon: TicketIcon, path: "/tickets" }, // Aggiunto qui
+  { text: "Tickets", icon: TicketIcon, path: "/tickets" },
   { text: "Analytics", icon: AnalyticsIcon, path: "/analytics" },
   { text: "Settings", icon: SettingsIcon, path: "/settings" },
 ];
