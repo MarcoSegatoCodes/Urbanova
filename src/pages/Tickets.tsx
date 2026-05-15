@@ -79,15 +79,6 @@ export default function Tickets() {
     [vehicles],
   );
 
-  const stationNamesById = useMemo(
-    () =>
-      stations.reduce<Record<string, string>>((acc, station) => {
-        acc[station.id] = station.name;
-        return acc;
-      }, {}),
-    [stations],
-  );
-
   const technicians = useMemo(
     () =>
       users
@@ -243,7 +234,6 @@ export default function Tickets() {
       <TicketsTable
         tickets={visibleTickets}
         vehicleNamesById={vehicleNamesById}
-        stationNamesById={stationNamesById}
         technicians={technicians}
         sortBy={sortBy}
         sortDirection={sortDirection}
