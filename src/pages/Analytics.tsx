@@ -7,7 +7,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import type { Analytics as AnalyticsType } from "../types/analytics.types";
 import analyticsDataJson from "../data/analytics.json";
 
-import { ChartCard } from "../components/Analytics/ChartCard";
+import { ChartCard } from "../components/analytics/ChartCard";
 
 const data = analyticsDataJson as AnalyticsType;
 
