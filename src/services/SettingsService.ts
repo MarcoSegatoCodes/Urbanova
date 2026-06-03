@@ -37,9 +37,24 @@ let settings: AppSettings = {
   updatedAt: new Date().toISOString(),
 };
 
+function loadFromStorage(): Partial<AppSettings> | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
+function persist(): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  } catch {}
+}
+
 // --- INIT ---
 export const initSettings = (data: AppSettings): void => {
-  settings = { ...data };
+  const saved = loadFromStorage();
+  settings = saved ? { ...data, ...saved, updatedAt: saved.updatedAt ?? data.updatedAt } : { ...data };
 };
 
 // --- READ Operations ---
@@ -66,6 +81,7 @@ export const isMaintenanceMode = (): boolean => settings.system.maintenanceMode;
 // --- WRITE Operations ---
 export const updateSettings = (updates: Partial<AppSettings>): AppSettings => {
   settings = { ...settings, ...updates, updatedAt: new Date().toISOString() };
+  persist();
   return settings;
 };
 
@@ -77,6 +93,7 @@ export const updateDisplaySettings = (
     display: { ...settings.display, ...updates },
     updatedAt: new Date().toISOString(),
   };
+  persist();
   return settings;
 };
 
@@ -88,6 +105,7 @@ export const updateNotificationSettings = (
     notifications: { ...settings.notifications, ...updates },
     updatedAt: new Date().toISOString(),
   };
+  persist();
   return settings;
 };
 
@@ -99,6 +117,7 @@ export const updateSystemSettings = (
     system: { ...settings.system, ...updates },
     updatedAt: new Date().toISOString(),
   };
+  persist();
   return settings;
 };
 
