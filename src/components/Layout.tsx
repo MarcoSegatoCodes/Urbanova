@@ -29,7 +29,6 @@ import {
   DirectionsCar,
   Assignment,
   Logout,
-  Explore,
 } from "@mui/icons-material";
 
 import { routes } from "../router/routes";
