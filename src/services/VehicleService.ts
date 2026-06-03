@@ -12,6 +12,8 @@ export const initVehicles = (data: Vehicle[]): void => {
 // --- READ Operations ---
 export const getAllVehicles = (): Vehicle[] => [...vehicles];
 
+export const getVehicles = (): Vehicle[] => getAllVehicles();
+
 export const getVehicleById = (id: string): Vehicle | undefined => {
   return vehicles.find((v) => v.id === id);
 };

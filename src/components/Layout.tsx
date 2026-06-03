@@ -10,6 +10,7 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
+
 import Sidebar from "./Sidebar";
 import { routes } from "../router/routes";
 
@@ -53,7 +54,12 @@ export default function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontWeight: 700 }}
+          >
             {pageTitle}
           </Typography>
         </Toolbar>
@@ -103,7 +109,7 @@ export default function Layout() {
           flexGrow: 1,
           p: { xs: 2, sm: 3 },
           width: { md: `calc(100% - ${drawerWidth}px)` },
-          mt: "64px", 
+          mt: "64px",
           minHeight: "100vh",
         }}
       >

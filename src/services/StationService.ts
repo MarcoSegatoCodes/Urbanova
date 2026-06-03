@@ -12,6 +12,8 @@ export const initStations = (data: Station[]): void => {
 // --- READ Operations ---
 export const getAllStations = (): Station[] => [...stations];
 
+export const getStations = (): Station[] => getAllStations();
+
 export const getStationById = (id: string): Station | undefined => {
   return stations.find((s) => s.id === id);
 };
@@ -57,30 +59,6 @@ export const updateStationStatus = (
   return updateStation(id, { status });
 };
 
-export const connectStations = (
-  stationId1: string,
-  stationId2: string,
-): boolean => {
-  const s1 = getStationById(stationId1);
-  const s2 = getStationById(stationId2);
-  if (!s1 || !s2) return false;
-
-  const s1Connections = s1.connectedStationIds || [];
-  const s2Connections = s2.connectedStationIds || [];
-
-  if (!s1Connections.includes(stationId2)) {
-    updateStation(stationId1, {
-      connectedStationIds: [...s1Connections, stationId2],
-    });
-  }
-  if (!s2Connections.includes(stationId1)) {
-    updateStation(stationId2, {
-      connectedStationIds: [...s2Connections, stationId1],
-    });
-  }
-  return true;
-};
-
 export const deleteStation = (id: string): boolean => {
   const initialLength = stations.length;
   stations = stations.filter((s) => s.id !== id);
@@ -97,14 +75,6 @@ export const searchStations = (query: string): Station[] => {
       s.id.toLowerCase().includes(lowerQuery) ||
       s.name.toLowerCase().includes(lowerQuery) ||
       s.address?.toLowerCase().includes(lowerQuery),
-  );
-};
-
-export const getStationsWithAmenity = (
-  amenity: keyof Station["amenities"] & string,
-): Station[] => {
-  return stations.filter(
-    (s) => s.amenities?.[amenity as keyof typeof s.amenities],
   );
 };
 
