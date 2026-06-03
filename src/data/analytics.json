@@ -46,5 +46,10 @@
     { "time": "12:00", "consumption": 25 },
     { "time": "16:00", "consumption": 18 },
     { "time": "20:00", "consumption": 8 }
-  ]
+  ],
+  "todaysStats": {
+    "tripsCompleted": 10,
+    "co2SavedToday": 20,
+    "peakUsageHours": "8:30"
+  }
 }

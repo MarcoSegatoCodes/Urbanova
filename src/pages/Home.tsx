@@ -1,31 +1,112 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Box, Typography, IconButton, Tooltip, Grid } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
-import { Box, Typography, IconButton, Tooltip, Grid } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import type { DashboardData } from "../types/homepage.ts";
+import { WidgetCard } from "../components/dashboards/WidgetCard.tsx";
+import { FleetSummaryWidget } from "../components/dashboards/FleetSummaryWidget.tsx";
+import { LiveAlertsWidget } from "../components/dashboards/LiveAlertsWidget.tsx";
+import { QuickActionsWidget } from "../components/dashboards/QuickActionsWidget.tsx";
+import { StationOverviewWidget } from "../components/dashboards/StationOverviewWidget.tsx";
+import { TodaysStatsWidget } from "../components/dashboards/TodaysStatsWidget.tsx";
+import vehiclesData from "../data/vehicles.json";
+import stationsData from "../data/stations.json";
+import analyticsData from "../data/analytics.json";
 
-import type { DashboardData } from '../types/homepage.ts';
-import { WidgetCard } from '../components/dashboards/WidgetCard.tsx';
-import { FleetSummaryWidget } from '../components/dashboards/FleetSummaryWidget.tsx';
-import { LiveAlertsWidget } from '../components/dashboards/LiveAlertsWidget.tsx';
-import { QuickActionsWidget } from '../components/dashboards/QuickActionsWidget.tsx';
-import { StationOverviewWidget } from '../components/dashboards/StationOverviewWidget.tsx';
-import { TodaysStatsWidget } from '../components/dashboards/TodaysStatsWidget.tsx';
-
-// Mock API to simulate Urbanova in real time
+// Calculate real metrics from actual data
 const fetchUrbanovaData = (): Promise<DashboardData> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({
-        fleet: { total: 150, active: 124, inactive: 26, bikes: 90, eVehicles: 60 },
-        stations: { total: 24, operational: 21, maintenance: 3 },
-        alerts: [
-          { id: 1, message: "Station 'Central' battery low (15%)", severity: 'warning' },
-          { id: 2, message: 'Vehicle #404 offline for 2 hours', severity: 'critical' },
-          { id: 3, message: "Scheduled maintenance for 'Park' station tomorrow", severity: 'info' },
-        ],
-        statsToday: { trips: 842, co2Saved: 124.5, peakHour: '08:00 - 09:00' },
+      // Fleet metrics
+      const total = vehiclesData.length;
+      const active = vehiclesData.filter(
+        (v: unknown) => (v as Record<string, unknown>).status !== "MAINTENANCE",
+      ).length;
+      const inactive = total - active;
+      const bikes = vehiclesData.filter(
+        (v: unknown) => (v as Record<string, unknown>).type === "BIKE",
+      ).length;
+      const eVehicles = vehiclesData.filter(
+        (v: unknown) =>
+          (v as Record<string, unknown>).type === "ELECTRIC_CAR" ||
+          (v as Record<string, unknown>).type === "ELECTRIC_SCOOTER",
+      ).length;
+
+      // Station metrics
+      const totalStations = stationsData.length;
+      const operational = stationsData.filter(
+        (s: unknown) => (s as Record<string, unknown>).status === "OPERATIONAL",
+      ).length;
+      const maintenance = totalStations - operational;
+
+      // Get today's stats from analytics
+      const todaysStats = ((analyticsData as Record<string, unknown>)
+        .todaysStats || {
+        tripsCompleted: 0,
+        co2SavedToday: 0,
+        peakUsageHours: "N/A",
+      }) as Record<string, unknown>;
+
+      // Generate alerts based on data
+      const alerts = [];
+
+      // Alert for low battery vehicles
+      const lowBatteryVehicles = vehiclesData.filter((v: unknown) => {
+        const vehicle = v as Record<string, unknown>;
+        return (vehicle.batteryLevel as number) < 25;
       });
-    }, 1200);
+      if (lowBatteryVehicles.length > 0) {
+        alerts.push({
+          id: 1,
+          message: `${lowBatteryVehicles.length} vehicle(s) with low battery (<25%)`,
+          severity: "warning" as const,
+        });
+      }
+
+      // Alert for maintenance needed
+      const maintenanceVehicles = vehiclesData.filter(
+        (v: unknown) => (v as Record<string, unknown>).status === "MAINTENANCE",
+      );
+      if (maintenanceVehicles.length > 0) {
+        alerts.push({
+          id: 2,
+          message: `${maintenanceVehicles.length} vehicle(s) in maintenance`,
+          severity: "critical" as const,
+        });
+      }
+
+      // Alert for stations in maintenance
+      const stationsInMaintenance = stationsData.filter(
+        (s: unknown) => (s as Record<string, unknown>).status !== "OPERATIONAL",
+      );
+      if (stationsInMaintenance.length > 0) {
+        alerts.push({
+          id: 3,
+          message: `${stationsInMaintenance.length} station(s) down for maintenance`,
+          severity: "warning" as const,
+        });
+      }
+
+      // If no alerts, add an info message
+      if (alerts.length === 0) {
+        alerts.push({
+          id: 4,
+          message: "All systems operational",
+          severity: "info" as const,
+        });
+      }
+
+      resolve({
+        fleet: { total, active, inactive, bikes, eVehicles },
+        stations: { total: totalStations, operational, maintenance },
+        alerts,
+        statsToday: {
+          trips: (todaysStats.tripsCompleted as number) || 0,
+          co2Saved: (todaysStats.co2SavedToday as number) || 0,
+          peakHour: (todaysStats.peakUsageHours as string) || "N/A",
+        },
+      });
+    }, 500);
   });
 };
 
@@ -41,40 +122,79 @@ export default function Home() {
       setData(result);
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching Urbanova dashboard:', error);
+      console.error("Error fetching Urbanova dashboard:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    handleRefresh();
+    let mounted = true;
+
+    const initData = async () => {
+      if (mounted) {
+        setLoading(true);
+        try {
+          const result = await fetchUrbanovaData();
+          if (mounted) {
+            setData(result);
+            setLastUpdated(new Date());
+          }
+        } catch (error) {
+          console.error("Error fetching Urbanova dashboard:", error);
+        } finally {
+          if (mounted) {
+            setLoading(false);
+          }
+        }
+      }
+    };
+
+    initData();
+
     const interval = setInterval(handleRefresh, 60000); // Auto-refresh every 60 seconds
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (
     <Box sx={{ p: 3 }}>
       {/* Dynamic header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          mb: 4,
+        }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: "bold", color: "primary.main" }}
+          >
             Welcome to Urbanova
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Real-time snapshot of your mobility ecosystem. 
-            Last updated: <strong>{lastUpdated.toLocaleTimeString()}</strong>
+            Real-time snapshot of your mobility ecosystem. Last updated:{" "}
+            <strong>{lastUpdated.toLocaleTimeString()}</strong>
           </Typography>
         </Box>
 
         <Tooltip title="Refresh Dashboard">
-          <IconButton onClick={handleRefresh} color="primary" sx={{ bgcolor: 'background.paper', boxShadow: 2 }}>
+          <IconButton
+            onClick={handleRefresh}
+            color="primary"
+            sx={{ bgcolor: "background.paper", boxShadow: 2 }}
+          >
             <RefreshIcon
               sx={{
-                animation: loading ? 'spin 1s linear infinite' : 'none',
-                '@keyframes spin': {
-                  '0%': { transform: 'rotate(0deg)' },
-                  '100%': { transform: 'rotate(360deg)' },
+                animation: loading ? "spin 1s linear infinite" : "none",
+                "@keyframes spin": {
+                  "0%": { transform: "rotate(0deg)" },
+                  "100%": { transform: "rotate(360deg)" },
                 },
               }}
             />
@@ -84,7 +204,6 @@ export default function Home() {
 
       {/* Grid Layout for Widgets */}
       <Grid container spacing={3}>
-        
         {/* Fleet and Station Status */}
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <WidgetCard title="Fleet Status" loading={loading}>
@@ -118,7 +237,6 @@ export default function Home() {
             <QuickActionsWidget />
           </WidgetCard>
         </Grid>
-
       </Grid>
     </Box>
   );
