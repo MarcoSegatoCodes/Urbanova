@@ -14,6 +14,20 @@
     "lastInspection": "2026-04-01"
   },
   {
+    "id": "ST-002",
+    "name": "Milano Park Station",
+    "address": "Parco Sempione, Milano",
+    "coordinates": { "lat": 45.4742, "lng": 9.1750 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 25,
+    "availableDocks": 12,
+    "availableBikes": 8,
+    "availableEVehicles": 5,
+    "chargingPorts": 6,
+    "lastInspection": "2026-05-15"
+  },
+  {
     "id": "ST-003",
     "name": "University Campus",
     "address": "Piazza Leonardo da Vinci, Milano",
@@ -26,5 +40,33 @@
     "availableEVehicles": 0,
     "chargingPorts": 0,
     "lastInspection": "2026-03-28"
+  },
+  {
+    "id": "ST-004",
+    "name": "Milano Duomo Station",
+    "address": "Piazza del Duomo, Milano",
+    "coordinates": { "lat": 45.4642, "lng": 9.1919 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 35,
+    "availableDocks": 15,
+    "availableBikes": 15,
+    "availableEVehicles": 5,
+    "chargingPorts": 8,
+    "lastInspection": "2026-05-20"
+  },
+  {
+    "id": "ST-005",
+    "name": "Garibaldi Station",
+    "address": "Piazza Freud, Milano",
+    "coordinates": { "lat": 45.4850, "lng": 9.2050 },
+    "type": "HYBRID",
+    "status": "OPERATIONAL",
+    "totalDocks": 28,
+    "availableDocks": 10,
+    "availableBikes": 12,
+    "availableEVehicles": 6,
+    "chargingPorts": 5,
+    "lastInspection": "2026-05-10"
   }
 ]

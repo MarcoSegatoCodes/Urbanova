@@ -20,5 +20,49 @@
     "endTime": "2026-04-22T09:20:00Z",
     "distanceKm": 3.1,
     "co2SavedKg": 0.51
+  },
+  {
+    "id": "TR-003",
+    "vehicleId": "VH-003",
+    "userId": "USR-006",
+    "startStationId": "ST-001",
+    "endStationId": "ST-004",
+    "startTime": "2026-05-15T07:45:00Z",
+    "endTime": "2026-05-15T08:12:00Z",
+    "distanceKm": 2.8,
+    "co2SavedKg": 0.46
+  },
+  {
+    "id": "TR-004",
+    "vehicleId": "VH-004",
+    "userId": "USR-007",
+    "startStationId": "ST-002",
+    "endStationId": "ST-005",
+    "startTime": "2026-05-15T12:30:00Z",
+    "endTime": "2026-05-15T12:50:00Z",
+    "distanceKm": 2.5,
+    "co2SavedKg": 0.41
+  },
+  {
+    "id": "TR-005",
+    "vehicleId": "VH-001",
+    "userId": "USR-003",
+    "startStationId": "ST-004",
+    "endStationId": "ST-002",
+    "startTime": "2026-05-20T14:00:00Z",
+    "endTime": "2026-05-20T14:35:00Z",
+    "distanceKm": 4.1,
+    "co2SavedKg": 0.67
+  },
+  {
+    "id": "TR-006",
+    "vehicleId": "VH-002",
+    "userId": "USR-006",
+    "startStationId": "ST-005",
+    "endStationId": "ST-001",
+    "startTime": "2026-05-21T09:15:00Z",
+    "endTime": "2026-05-21T10:05:00Z",
+    "distanceKm": 7.2,
+    "co2SavedKg": 1.18
   }
 ]
