@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import {
   Home,
-  DirectionsBus,
+  Directions,
   Map,
   Explore,
   People,
@@ -29,6 +29,7 @@ import {
   DirectionsCar,
   Assignment,
   Logout,
+  LocationOn,
 } from "@mui/icons-material";
 
 import { routes } from "../router/routes";
@@ -39,8 +40,8 @@ const drawerWidth = 240;
 const iconMap: Record<string, ComponentType> = {
   Home: Home,
   Map: Explore,
-  Stations: Map,
-  Trips: DirectionsBus,
+  Stations: LocationOn,
+  Trips: Directions,
   Vehicles: DirectionsCar,
   Users: People,
   Tickets: Assignment,
