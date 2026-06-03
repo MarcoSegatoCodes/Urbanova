@@ -12,6 +12,7 @@ import { lazy, type ComponentType } from "react";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("../pages/Home"));
+const MapPage = lazy(() => import("../pages/Map"));
 const Stations = lazy(() => import("../pages/Stations"));
 const Trips = lazy(() => import("../pages/Trips"));
 const Vehicles = lazy(() => import("../pages/Vehicles"));
@@ -36,6 +37,11 @@ export const routes: RouteConfig[] = [
     component: Home,
     name: "Home",
     isIndex: true,
+  },
+  {
+    path: "/map",
+    component: MapPage,
+    name: "Map",
   },
   {
     path: "/stations",

@@ -22,6 +22,7 @@ import {
   Home,
   DirectionsBus,
   Map,
+  Explore,
   People,
   Analytics,
   Settings,
