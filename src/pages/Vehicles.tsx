@@ -220,6 +220,10 @@ export default function Vehicles() {
     }
   };
 
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
   const handleSort = (field: string) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -305,6 +309,7 @@ export default function Vehicles() {
           onAssignStation={handleBulkAssignStation}
           onDelete={handleBulkDelete}
           isLoading={isLoading}
+          onClearSelection={handleClearSelection}
         />
 
         {/* Table */}
