@@ -28,6 +28,7 @@ export interface RouteConfig {
   name: string;
   icon?: ComponentType;
   isIndex?: boolean;
+  allowedRoles?: string[];
 }
 
 export const routes: RouteConfig[] = [
@@ -51,26 +52,31 @@ export const routes: RouteConfig[] = [
     path: "/trips",
     component: Trips,
     name: "Trips",
+    allowedRoles: ["ADMIN", "TECHNICIAN", "SUPPORT"],
   },
   {
     path: "/vehicles",
     component: Vehicles,
     name: "Vehicles",
+    allowedRoles: ["ADMIN", "TECHNICIAN", "SUPPORT"],
   },
   {
     path: "/users",
     component: Users,
     name: "Users",
+    allowedRoles: ["ADMIN", "TECHNICIAN"],
   },
   {
     path: "/tickets",
     component: Tickets,
     name: "Tickets",
+    allowedRoles: ["ADMIN", "SUPPORT"],
   },
   {
     path: "/analytics",
     component: Analytics,
     name: "Analytics",
+    allowedRoles: ["ADMIN"],
   },
   {
     path: "/settings",

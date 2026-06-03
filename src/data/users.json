@@ -34,5 +34,14 @@
     "lastName": "Prevarin",
     "role": "SUPPORT",
     "isActive": true
+  },
+    {
+    "id": "USR-005",
+    "email": "support@urbanova.com",
+    "password": "support",
+    "firstName": "Ludovico",
+    "lastName": "Cammarata",
+    "role": "SUPPORT",
+    "isActive": true
   }
 ]
