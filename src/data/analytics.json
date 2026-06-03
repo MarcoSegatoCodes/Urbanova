@@ -1,55 +1,57 @@
 {
   "summary": {
-    "totalVehicles": 24,
-    "activeVehicles": 18,
-    "totalStations": 12,
-    "operationalStations": 11,
-    "totalTripsToday": 47,
-    "totalTripsThisMonth": 1284,
-    "co2SavedToday": 38.5,
-    "co2SavedThisMonth": 1050.2,
-    "co2SavedAllTime": 12450.8,
-    "averageTripDurationMinutes": 18,
-    "fleetUtilizationRate": 75,
-    "mostPopularStation": "Central Station",
+    "totalVehicles": 32,
+    "activeVehicles": 28,
+    "totalStations": 15,
+    "operationalStations": 15,
+    "totalTripsToday": 62,
+    "totalTripsThisMonth": 1543,
+    "co2SavedToday": 48.2,
+    "co2SavedThisMonth": 1289.5,
+    "co2SavedAllTime": 14823.6,
+    "averageTripDurationMinutes": 22,
+    "fleetUtilizationRate": 82,
+    "mostPopularStation": "Central Station Hub",
     "peakHour": "08:00 - 09:00"
   },
   "tripsByDayOfWeek": [
-    { "day": "Mon", "trips": 180 },
-    { "day": "Tue", "trips": 195 },
-    { "day": "Wed", "trips": 210 },
-    { "day": "Thu", "trips": 188 },
-    { "day": "Fri", "trips": 220 },
-    { "day": "Sat", "trips": 165 },
-    { "day": "Sun", "trips": 126 }
+    { "day": "Mon", "trips": 210 },
+    { "day": "Tue", "trips": 225 },
+    { "day": "Wed", "trips": 240 },
+    { "day": "Thu", "trips": 218 },
+    { "day": "Fri", "trips": 260 },
+    { "day": "Sat", "trips": 195 },
+    { "day": "Sun", "trips": 155 }
   ],
   "tripsByVehicleType": [
-    { "type": "BIKE", "value": 580 },
-    { "type": "SCOOTER", "value": 420 },
-    { "type": "CAR", "value": 180 },
-    { "type": "BUS", "value": 104 }
+    { "type": "BIKE", "value": 720 },
+    { "type": "SCOOTER", "value": 520 },
+    { "type": "CAR", "value": 220 },
+    { "type": "BUS", "value": 148 }
   ],
   "co2SavedByMonth": [
     { "month": "Jan", "co2": 890.5 },
     { "month": "Feb", "co2": 920.3 },
     { "month": "Mar", "co2": 1015.8 },
-    { "month": "Apr", "co2": 780.2 }
+    { "month": "Apr", "co2": 1123.4 },
+    { "month": "May", "co2": 1289.5 }
   ],
   "usageByStation": [
-    { "station": "Central", "usage": 450 },
-    { "station": "University", "usage": 380 },
-    { "station": "Park", "usage": 210 },
-    { "station": "Mall", "usage": 190 }
+    { "station": "Central", "usage": 540 },
+    { "station": "University", "usage": 420 },
+    { "station": "Park", "usage": 310 },
+    { "station": "Duomo", "usage": 280 },
+    { "station": "Garibaldi", "usage": 250 }
   ],
   "batteryConsumptionOverTime": [
-    { "time": "08:00", "consumption": 12 },
-    { "time": "12:00", "consumption": 25 },
-    { "time": "16:00", "consumption": 18 },
-    { "time": "20:00", "consumption": 8 }
+    { "time": "08:00", "consumption": 18 },
+    { "time": "12:00", "consumption": 32 },
+    { "time": "16:00", "consumption": 28 },
+    { "time": "20:00", "consumption": 12 }
   ],
   "todaysStats": {
-    "tripsCompleted": 10,
-    "co2SavedToday": 20,
-    "peakUsageHours": "8:30"
+    "tripsCompleted": 15,
+    "co2SavedToday": 25.5,
+    "peakUsageHours": "8:45"
   }
 }
