@@ -17,6 +17,7 @@ import {
   Home,
   DirectionsBus,
   Map,
+  Explore,
   People,
   Analytics,
   Settings,
@@ -30,6 +31,7 @@ const drawerWidth = 240;
 
 const iconMap: Record<string, ComponentType> = {
   Home: Home,
+  Map: Explore,
   Stations: Map,
   Trips: DirectionsBus,
   Vehicles: DirectionsCar,
