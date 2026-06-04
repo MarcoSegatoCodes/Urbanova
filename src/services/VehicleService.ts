@@ -94,11 +94,13 @@ export const searchVehicles = (query: string): Vehicle[] => {
 };
 
 // --- SIMULATION ---
-const MOVE_DELTA = 0.0080; // ~80m per tick
+const MOVE_DELTA = 0.008; // ~80m per tick
 
 export const simulateVehicleMovement = (): void => {
   vehicles = vehicles.map((v) => {
-    if (v.status === "MAINTENANCE" || v.status === "OUT_OF_SERVICE") return v;
+    // Only IN_USE vehicles should move
+    if (v.status !== "IN_USE") return v;
+
     return {
       ...v,
       coordinates: {
@@ -106,6 +108,55 @@ export const simulateVehicleMovement = (): void => {
         lng: v.coordinates.lng + (Math.random() - 0.5) * MOVE_DELTA,
       },
     };
+  });
+};
+
+/**
+ * Simulate dynamic status changes:
+ * - AVAILABLE vehicles have a chance to be picked up (become IN_USE)
+ * - IN_USE vehicles can break down (MAINTENANCE) or run out of battery (CHARGING)
+ * - Vehicles can go OUT_OF_SERVICE
+ * - CHARGING vehicles eventually finish charging and return to AVAILABLE
+ */
+export const simulateVehicleStatusChanges = (): void => {
+  vehicles = vehicles.map((v) => {
+    const rand = Math.random() * 100;
+
+    // AVAILABLE -> IN_USE (3% chance)
+    if (v.status === "AVAILABLE" && rand < 3) {
+      return { ...v, status: "IN_USE" };
+    }
+
+    // IN_USE -> MAINTENANCE (2% chance)
+    if (v.status === "IN_USE" && rand < 2) {
+      return { ...v, status: "MAINTENANCE" };
+    }
+
+    // IN_USE -> CHARGING if battery low (10% chance if below 25%)
+    if (v.status === "IN_USE" && v.batteryLevel < 25 && rand < 10) {
+      return { ...v, status: "CHARGING" };
+    }
+
+    // IN_USE -> OUT_OF_SERVICE (0.5% chance)
+    if (v.status === "IN_USE" && rand < 0.5) {
+      return { ...v, status: "OUT_OF_SERVICE" };
+    }
+
+    // CHARGING -> AVAILABLE (15% chance - charging completes)
+    if (v.status === "CHARGING" && rand < 15) {
+      return {
+        ...v,
+        status: "AVAILABLE",
+        batteryLevel: Math.min(100, v.batteryLevel + 30),
+      };
+    }
+
+    // MAINTENANCE -> AVAILABLE (5% chance - maintenance completes)
+    if (v.status === "MAINTENANCE" && rand < 5) {
+      return { ...v, status: "AVAILABLE" };
+    }
+
+    return v;
   });
 };
 

@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { Box, Alert, CircularProgress, Typography } from "@mui/material";
 import MapView from "../components/organisms/MapView";
-import { getAllVehicles, simulateVehicleMovement } from "../services/VehicleService";
+import {
+  getAllVehicles,
+  simulateVehicleMovement,
+  simulateVehicleStatusChanges,
+} from "../services/VehicleService";
 import { getAllStations } from "../services/StationService";
 import type { Vehicle } from "../types/vehicle.types";
 import type { Station } from "../types/station.types";
@@ -26,6 +30,7 @@ export default function Map() {
     }
 
     const interval = setInterval(() => {
+      simulateVehicleStatusChanges();
       simulateVehicleMovement();
       setVehicles(getAllVehicles());
     }, SIMULATION_INTERVAL_MS);
