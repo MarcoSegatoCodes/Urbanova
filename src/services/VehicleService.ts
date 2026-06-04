@@ -93,5 +93,21 @@ export const searchVehicles = (query: string): Vehicle[] => {
   );
 };
 
+// --- SIMULATION ---
+const MOVE_DELTA = 0.0080; // ~80m per tick
+
+export const simulateVehicleMovement = (): void => {
+  vehicles = vehicles.map((v) => {
+    if (v.status === "MAINTENANCE" || v.status === "OUT_OF_SERVICE") return v;
+    return {
+      ...v,
+      coordinates: {
+        lat: v.coordinates.lat + (Math.random() - 0.5) * MOVE_DELTA,
+        lng: v.coordinates.lng + (Math.random() - 0.5) * MOVE_DELTA,
+      },
+    };
+  });
+};
+
 // --- STORAGE KEY Export ---
 export const VEHICLE_STORAGE_KEY = STORAGE_KEY;
