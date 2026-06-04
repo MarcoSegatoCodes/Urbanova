@@ -12,8 +12,8 @@
     "id": "USR-002",
     "email": "tech@urbanova.com",
     "password": "tech",
-    "firstName": "Elena",
-    "lastName": "Bianchi",
+    "firstName": "Kawe",
+    "lastName": "Longon",
     "role": "TECHNICIAN",
     "isActive": true
   },
@@ -42,33 +42,6 @@
     "firstName": "Ludovico",
     "lastName": "Cammarata",
     "role": "SUPPORT",
-    "isActive": true
-  },
-  {
-    "id": "USR-006",
-    "email": "alice.rossi@gmail.com",
-    "password": "pass123",
-    "firstName": "Alice",
-    "lastName": "Rossi",
-    "role": "USER",
-    "isActive": true
-  },
-  {
-    "id": "USR-007",
-    "email": "bob.verdi@gmail.com",
-    "password": "secure456",
-    "firstName": "Roberto",
-    "lastName": "Verdi",
-    "role": "USER",
-    "isActive": true
-  },
-  {
-    "id": "USR-008",
-    "email": "maint@urbanova.com",
-    "password": "maint789",
-    "firstName": "Giovanni",
-    "lastName": "Ferrari",
-    "role": "TECHNICIAN",
     "isActive": true
   }
 ]
