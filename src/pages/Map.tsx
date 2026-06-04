@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Box, Alert, CircularProgress, Typography } from "@mui/material";
 import MapView from "../components/organisms/MapView";
-import { getAllVehicles } from "../services/VehicleService";
+import { getAllVehicles, simulateVehicleMovement } from "../services/VehicleService";
 import { getAllStations } from "../services/StationService";
 import type { Vehicle } from "../types/vehicle.types";
 import type { Station } from "../types/station.types";
+
+const SIMULATION_INTERVAL_MS = 5000;
 
 export default function Map() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -18,9 +20,17 @@ export default function Map() {
       setStations(getAllStations());
     } catch {
       setError("Unable to load map data. Please refresh the page.");
+      return;
     } finally {
       setLoading(false);
     }
+
+    const interval = setInterval(() => {
+      simulateVehicleMovement();
+      setVehicles(getAllVehicles());
+    }, SIMULATION_INTERVAL_MS);
+
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
